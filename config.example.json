@@ -2,5 +2,12 @@
 	"instagram": {
 		"access_token": "",
 		"FQDN": "https://api.instagram.com/v1/media/search"
+	},
+	"twitter": {
+		"FQDN": "https://api.twitter.com/1.1/",
+		"consumer_key": "",
+		"consumer_secret": "",
+		"oauth_token": "",
+		"oauth_token_secret": ""
 	}
 }
