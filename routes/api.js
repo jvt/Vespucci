@@ -23,11 +23,11 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	var longitude = req.params.LONGITUDE;
 
 	if (!latitude || !longitude) {
-		res.send({ 'error': true, 'message': 'MISSING PARAMETER' });
+		res.json({ 'error': true, 'message': 'MISSING PARAMETER' });
 	}
 
 	if (isNaN(latitude) || isNaN(longitude)) {
-		res.send({ 'error': true, 'message': 'PARAMETER NAN' });
+		res.json({ 'error': true, 'message': 'PARAMETER NaN' });
 	}
 
 	function sortInstagram(unsorted, callback)
@@ -333,4 +333,21 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	});
 });
 
+/* GET popular locations given a LATITUDE / LONGITUDE */
+router.get('/event/:LATITUDE/:LONGITUDE/:NAME/', function(req, res, next) {
+
+	var latitude = req.params.LATITUDE;
+	var longitude = req.params.LONGITUDE;
+	var name = req.params.NAME;
+
+	if (!latitude || !longitude || !name) {
+		res.json({ 'error': true, 'message': 'MISSING PARAMETER' });
+	}
+
+	if (isNaN(latitude) || isNaN(longitude)) {
+		res.json({ 'error': true, 'message': 'PARAMETER NaN' });
+	}
+
+	res.json({'data': 'THERE WILL BE SOMETHING HERE EVENTUALLY'});
+});
 module.exports = router;
