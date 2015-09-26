@@ -170,9 +170,10 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 
 				}
 				console.log(popular)
+				masterObject.push(popular);
 			}
 
-			res.send(results)
+			res.send(masterObject);
 		}
 	});
 });
