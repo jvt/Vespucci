@@ -103,13 +103,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		} else {
 			var masterObject = [];
 
-			loop1:
 			for (var i in results['instagramLocations'])
 			{
 				var ig = results['instagramLocations'][i];
-				if (ig[0].type != 'image') {
-					continue;
-				}
 				var location = ig[0].location;
 				
 				// Create new popular location Object
@@ -121,14 +117,18 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				popular.foursquare = [];
 				popular.location = {};
 
+				// Basic spam checker (removes any object with name that contains .com/.net/.org)
+				if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
+					break;
+				}
+
 				// Populate popular location Object with instagram photos
-				loop2:
 				for (photoIndex in ig)
 				{
 					var photo = ig[photoIndex];
 
-					if (!photo.location) {
-						break loop1;
+					if (!photo.location || photo.type != 'image') {
+						break;
 					}
 
 					popular.location = photo.location;
@@ -153,15 +153,19 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						results['twitter']['statuses'].splice(tweetIndex, 1);
 					} else {
 						// Compare lat/long
-						var photoLat = popular.location.latitude;
+						var photoLat  = popular.location.latitude;
 						var photoLong = popular.location.longitude;
-
-						// console.log(photoLong)
-
-						var tweetLat = tweet.geo.coordinates[0];
+						var tweetLat  = tweet.geo.coordinates[0];
 						var tweetLong = tweet.geo.coordinates[1];
 
-						// if (() && ())
+						if ((tweetLat > photoLat - .0009 && tweetLat < photoLat + .0009) && (tweetLong > photoLong - .0009 && tweetLong < photoLong + .0009)) {
+							var tweetData = {};
+							tweetData.text = tweet.text;
+							tweetData.id = tweet.id;
+							tweetData.created_at = tweet.created_at;
+							tweetData.geo = tweet.geo;
+							popular.tweets.push(tweetData);
+						}
 					}
 
 				}
