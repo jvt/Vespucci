@@ -1,7 +1,7 @@
 body {
-  padding: 50px;
+  padding: 0;
+  margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  text-align: center;
 }
 a {
   color: #00B7FF;
@@ -11,7 +11,7 @@ h1 {
 	font-size: 70px;
 	font-style: normal;
 	font-variant: normal;
-	font-weight: 500;
+	font-weight: lighter;
 	line-height: 26.4px;
 }
 h3 {
@@ -46,12 +46,26 @@ pre {
 	font-weight: 400;
 	line-height: 18.5714px;
 }
-#content {
+#headercontent {
   width: 70%;
   position: relative;
   top: 100px;
+  text-align: center;
 }
 #searchBar {
 	position: relative;
 	top: 60px;
+}
+#smalllogo {
+	padding: 0;
+	margin: 0;
+	color: white;
+	float: left;
+	display: none;
+	position: relative;
+	left: 30px;
+	font-size: 2.5em;
+}
+#headerbar {
+	padding: 20px 0;
 }

@@ -16,13 +16,12 @@
 				var autocomplete;
 
 				function initAutocomplete() {
-				  // Create the autocomplete object, restricting the search to geographical
-				  // location types.
-				  autocomplete = new google.maps.places.Autocomplete(
-				      /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-				      {types: ['geocode']});
+				  // Create the autocomplete object
+				  autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
+				  		types: ['geocode']
+				  	});
 
-				  // When the user selects an address from the dropdown, populate the address, prints the lat long
+				  // When the user selects an address from the dropdown, populate the address, sends the lat long
 
 				  autocomplete.addListener('place_changed', function() {
 				  	var place = autocomplete.getPlace().geometry.location;
@@ -31,9 +30,13 @@
 				  	console.log("Success through autocomplete!")
 				  	console.log("latitude: " + lat);
 				    console.log("longitude: " +  lng);
+				    // GET request /API/SEARCH/{LAT}/{LNG}/
+				    	// Sets to main page with coordinates as the starting center of the circle
+				    	// No pin
+				    animateTransition();
 				  });
 				}
-				// Button is clicked, sends you based on your current location
+				// Button is clicked, sends lat and long based on your current location
 				function geolocate() {
 				  if (navigator.geolocation) {
 				    navigator.geolocation.getCurrentPosition(function(position) {
@@ -42,8 +45,28 @@
 				      console.log("Success through geolocation!")
 				      console.log("latitude: " + lat);
 				      console.log("longitude: " +  lng);
+				      // GET request /API/SEARCH/{LAT}/{LNG}/
+				    		// Sets to main page with coordinates as the starting center of the circle
+				    		// Set pin to the center of the page
+				    	animateTransition();
 				    });
 				  }
+				}
+
+				function animateTransition() {
+		    	$("#mainlogo").fadeOut('slow', function() {
+		    		$("#searchBar").animate({
+		    			"top": "-100px",
+		    			"left": "50px"
+		    		}, 'slow');
+		    		$("#smalllogo").fadeIn('slow');
+		    		$("#headerbar").css({
+		    			"backgroundColor": "#AA4652"
+		    		});
+		    		$("#headercontent").css({
+		    			"width": "90%"
+		    		});
+		    	});
 				}
 			</script>
 			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=true&libraries=places&callback=initAutocomplete"
