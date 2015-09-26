@@ -166,10 +166,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					callback(true, body)
 				}
 			});
-		},
-		foursquare: function(callback)
-		{
-			callback(null, null)
 		}
 	}, function(error, results)
 	{
@@ -211,9 +207,31 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				// });
 			}, function(notAborted, array)
 			{
-				for (var i in results['instagramLocations'])
+				function getFoursquareInformation(name, latitude, longitude, callback)
 				{
-					var ig = results['instagramLocations'][i];
+					var url = config.get('foursquare').FQDN + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ config.get('foursquare').client_id +'&client_secret=' + config.get('foursquare').client_secret + '&v=20140806';
+					request(url, function(error, response, body)
+					{
+						if (error) {
+							callback(error, null);
+						}
+						var fs = JSON.parse(body);
+						var v = fs.response['venues'];
+						if (v.length > 0) {
+							callback(null, v[0])
+						} else {
+							callback(null, {});
+						}
+					});
+				}
+				console.log(Object.keys(results['instagramLocations']))
+				console.log(_.range(Object.keys(results['instagramLocations']).length))
+				forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
+				{
+					var i = Object.keys(results['instagramLocations'])[index]
+					console.log(i)
+
+					var ig = results['instagramLocations'][i.toString()];
 					var location = ig[0].location;
 					
 					// Create new popular location Object
@@ -222,12 +240,14 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					popular.name = location.name;
 					popular.instagram = [];
 					popular.tweets = [];
-					popular.foursquare = [];
+					popular.foursquare = {};
 					popular.location = {};
+
+					console.log(location.name)
 
 					// Basic spam checker (removes any object with name that contains .com/.net/.org)
 					if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
-						break;
+						return;
 					}
 
 					// Populate popular location Object with instagram photos
@@ -236,7 +256,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						var photo = ig[photoIndex];
 
 						if (!photo.location || photo.type != 'image') {
-							break;
+							return;
 						}
 
 						popular.loc = photo.location;
@@ -282,14 +302,33 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 								}
 							}
 						}
-					}, function (notAborted, array)
-					{
-						masterObject.push(popular);
 					});
-				}
+					var done = this.async();
+					async.parallel({
+						foursquare: function(callback)
+						{
+							getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
+							{
+								callback(null, results);
+							});
+						},
+						twitter: function(callback)
+						{
+							callback(null, {});
+						}
+					}, function(error, results)
+					{
+						popular.tweets = results['twitter'];
+						popular.foursquare = results['foursquare'];
+						console.log(results);
+						masterObject.push(popular);
+						done()
+					});
+				}, function(notAborted, array)
+				{
+					res.json(masterObject);
+				});
 			});
-
-			res.json(masterObject);
 		}
 	});
 });
