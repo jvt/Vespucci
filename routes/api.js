@@ -165,6 +165,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 							tweetData.created_at = tweet.created_at;
 							tweetData.geo = tweet.geo;
 							popular.tweets.push(tweetData);
+
+							// Remove from tweet array now that we know where it belongs
+							results['twitter']['statuses'].slice(tweetIndex, 1);
 						}
 					}
 
