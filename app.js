@@ -5,6 +5,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var path = require('path');
+
+// Config
+GLOBAL.config = require('nconf').argv().env().file({ file: path.join(__dirname, 'config.json') });
 
 var index = require('./routes/index');
 var api = require('./routes/api');
