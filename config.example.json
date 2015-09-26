@@ -9,5 +9,11 @@
 		"consumer_secret": "",
 		"oauth_token": "",
 		"oauth_token_secret": ""
-	}
+	},
+	"foursquare": {
+
+	},
+	"alchemy": {
+		"API_KEY": ""
+	}	
 }
