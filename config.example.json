@@ -1,0 +1,6 @@
+{
+	"instagram": {
+		"access_token": "",
+		"FQDN": "https://api.instagram.com/v1/media/search"
+	}
+}

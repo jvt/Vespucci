@@ -28,3 +28,6 @@ node_modules
 
 # OS X database file
 .DS_Store
+
+# Config file
+config.json
