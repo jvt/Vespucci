@@ -2,7 +2,7 @@
 <html>
 	<head>
 	    <meta charset="utf-8">
-	    <title>Vespucci</title>
+	    <title>Vespuci</title>
 	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
@@ -10,8 +10,9 @@
 	<body>
 	    {{{ body }}}
 
-	    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+			<script defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false">
+    	</script>
 			<script>
 				var autocomplete;
 
@@ -22,7 +23,6 @@
 				  	});
 
 				  // When the user selects an address from the dropdown, populate the address, sends the lat long
-
 				  autocomplete.addListener('place_changed', function() {
 				  	var place = autocomplete.getPlace().geometry.location;
 				  	var lat = place.H;
@@ -36,6 +36,7 @@
 				    animateTransition();
 				  });
 				}
+
 				// Button is clicked, sends lat and long based on your current location
 				function geolocate() {
 				  if (navigator.geolocation) {
@@ -60,16 +61,71 @@
 		    			"left": "50px"
 		    		}, 'slow');
 		    		$("#smalllogo").fadeIn('slow');
-		    		$("#headerbar").css({
+		    		$("#headerbackground").css({
 		    			"backgroundColor": "#AA4652"
 		    		});
 		    		$("#headercontent").css({
 		    			"width": "90%"
 		    		});
+		    		$("#blur").css({
+		    			"display": "none"
+		    		})
 		    	});
 				}
+
+				var map;
+				function initMap() {
+				  var myLatLng = {
+				    lat: 33.7758,
+				    lng: -84.3947
+				  };
+				  var styleArray = [
+				    {
+				      featureType: "all",
+				      stylers: [
+				       { saturation: -100 }
+				      ]
+				    },{
+				      featureType: "road.arterial",
+				      elementType: "geometry",
+				      stylers: [
+				        { hue: "#00ffee" },
+				        { saturation: 50 }
+				      ]
+				    },{
+				      featureType: "poi.business",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				  ];
+				  var mapOptions = {
+				  	disableDefaultUI: true,
+				  	scrollwheel: false,
+    				navigationControl: false,
+    				mapTypeControl: false,
+    				scaleControl: false,
+    				draggable: false,
+				    mapTypeId: google.maps.MapTypeId.ROADMAP,
+				    center: myLatLng,
+				    zoom: 15,
+				    styles: styleArray
+				  };
+				  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+				}
+
+				window.onload = function() {
+					initMap();
+				}
+
+
 			</script>
-			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=true&libraries=places&callback=initAutocomplete"
+			<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+			
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>	
+			
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false&libraries=places&callback=initAutocomplete"
         async defer></script>
 	</body>
 </html>
