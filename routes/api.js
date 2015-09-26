@@ -15,6 +15,8 @@ var ig = require('instagram-node').instagram();
 
 var forEach = require('async-foreach').forEach;
 
+var _ = require('underscore');
+
 /* GET popular locations given a LATITUDE / LONGITUDE */
 router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	var latitude = req.params.LATITUDE;
@@ -31,7 +33,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	function sortInstagram(unsorted, callback)
 	{
 		var locations = {};
-		console.log(unsorted.length);
 		forEach(unsorted, function(image, result, array) {
 			var imageLocationID = unsorted[result].location.id;
 			if (locations[imageLocationID]) {
@@ -47,12 +48,35 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 
 	function pushIntoArray(toBeExploded, toBePushed, callback)
 	{
-		forEach(toBeExploded, function(exploded, result, array)
+		var newArray = toBePushed;
+		forEach(toBeExploded, function(exploded, index)
 		{
-			toBePushed.push(exploded);
+			newArray.push(exploded);
 		}, function(notAborted, array)
 		{
-			callback(toBePushed);
+			callback(newArray);
+		});
+	}
+
+	function loadInstagramPhotos(MAX_TIMESTAMP, callback)
+	{
+		var url;
+		if (MAX_TIMESTAMP) {
+			url = config.get('instagram').FQDN + '?distance=5000&max_timestamp='+MAX_TIMESTAMP+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+		} else {
+			url = config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+		}
+		request(url, function(error, response, body)
+		{
+			if (error) {
+				callback(error, null);
+			}
+			if (body && response.statusCode == 200) {
+				var results = JSON.parse(body);
+				callback(null, results);						
+			} else {
+				callback('Error contacting Instagram API', null);
+			}
 		});
 	}
 
@@ -64,39 +88,46 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			start = start / 1000;
 			var url = config.get('instagram').FQDN + '?distance=5000&MIN_TIMESTAMP='+start+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
 			var rawUnsorted = [];
-			request(url, function(error, response, body)
+			var iterations = 5;
+			function instagramify(MAX_TIMESTAMP, callback)
 			{
-				if (error) {
-					callback(error, null);
+				loadInstagramPhotos(MAX_TIMESTAMP, function(error, results)
+				{
+					if (error) {
+						console.error(error);
+					}
+					pushIntoArray(results.data, rawUnsorted, function(newResult) {
+						rawUnsorted = newResult;
+						callback();
+					});
+				});
+			}
+			forEach(_.range(5), function(item, index)
+			{
+				var done = this.async();
+				var iteration = null;
+				if (index > 0) {
+					iterationIndex = (index*20)-1;
+					if (rawUnsorted[iterationIndex]) {
+						iteration = rawUnsorted[iterationIndex].created_time;
+					} else {
+						iteration = null;
+					}
 				}
-				if (body && response.statusCode == 200) {
-					var results = JSON.parse(body);
-					pushIntoArray(results.data, rawUnsorted, function(){});
-
-					var nextPage = results.data[19].created_time;
-					var secondURL = url + "&max_timestamp="+nextPage;
-					request(secondURL, function(error, response2, body2)
+				if ((index > 0 && iteration != null) || index == 0 ) {
+					instagramify(iteration, function()
 					{
-						if (error) {
-							callback(error, null);
-						}
-						if (body2 && response2.statusCode == 200) {
-							var results2 = JSON.parse(body2);
-
-							pushIntoArray(results2.data, rawUnsorted, function()
-							{
-								sortInstagram(rawUnsorted, function(sorted)
-								{
-									callback(null, sorted);
-								});
-							});							
-						} else {
-							callback(true, 'Error contacting Instagram API');
-						}
+						done();
 					});
 				} else {
-					callback(true, 'Error contacting Instagram API');
+					done();
 				}
+			}, function(notAborted, array)
+			{
+				sortInstagram(rawUnsorted, function(newlySorted)
+				{
+					callback(null, newlySorted);	
+				})
 			});
 		},
 		twitter: function(callback)
