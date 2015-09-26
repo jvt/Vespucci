@@ -10,7 +10,7 @@ var index = require('./routes/index');
 var api = require('./routes/api');
 
 var app = express();
-var hbs = exphbs.create({ /* config */ });
+var hbs = exphbs.create({ defaultLayout: 'default' });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
