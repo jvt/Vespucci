@@ -13,6 +13,10 @@ var async = require('async');
 
 var ig = require('instagram-node').instagram();
 
+var forEach = require('async-foreach').forEach;
+
+var _ = require('underscore');
+
 /* GET popular locations given a LATITUDE / LONGITUDE */
 router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	var latitude = req.params.LATITUDE;
@@ -26,33 +30,104 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		res.send({ 'error': true, 'message': 'PARAMETER NAN' });
 	}
 
+	function sortInstagram(unsorted, callback)
+	{
+		var locations = {};
+		forEach(unsorted, function(image, result, array) {
+			var imageLocationID = unsorted[result].location.id;
+			if (locations[imageLocationID]) {
+				locations[imageLocationID].push(unsorted[result]);
+			} else {
+				locations[imageLocationID] = [unsorted[result]];
+			}
+		}, function(notAborted, array)
+		{
+			callback(locations);
+		});
+	}
+
+	function pushIntoArray(toBeExploded, toBePushed, callback)
+	{
+		var newArray = toBePushed;
+		forEach(toBeExploded, function(exploded, index)
+		{
+			newArray.push(exploded);
+		}, function(notAborted, array)
+		{
+			callback(newArray);
+		});
+	}
+
+	function loadInstagramPhotos(MAX_TIMESTAMP, callback)
+	{
+		var url;
+		if (MAX_TIMESTAMP) {
+			url = config.get('instagram').FQDN + '?distance=5000&max_timestamp='+MAX_TIMESTAMP+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+		} else {
+			url = config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+		}
+		request(url, function(error, response, body)
+		{
+			if (error) {
+				callback(error, null);
+			}
+			if (body && response.statusCode == 200) {
+				var results = JSON.parse(body);
+				callback(null, results);						
+			} else {
+				callback('Error contacting Instagram API', null);
+			}
+		});
+	}
+
 	async.parallel({
 		instagramLocations: function(callback)
 		{
-			var url = config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
-			request(url, function(error, response, body)
+			var start = new Date();
+			start.setHours(start.getHours-4);
+			start = start / 1000;
+			var url = config.get('instagram').FQDN + '?distance=5000&MIN_TIMESTAMP='+start+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+			var rawUnsorted = [];
+			var iterations = 5;
+			function instagramify(MAX_TIMESTAMP, callback)
 			{
-				if (error) {
-					callback(error, null);
-				}
-				if (body && response.statusCode == 200) {
-					var results = JSON.parse(body).data;
-
-					var locations = {};
-
-					for (result in results) {
-						var imageLocationID = results[result].location.id;
-						if (locations[imageLocationID]) {
-							locations[imageLocationID].push(results[result]);
-						} else {
-							locations[imageLocationID] = [results[result]];
-						}
+				loadInstagramPhotos(MAX_TIMESTAMP, function(error, results)
+				{
+					if (error) {
+						console.error(error);
 					}
-
-					callback(null, locations);
-				} else {
-					callback(true, 'Error contacting Instagram API');
+					pushIntoArray(results.data, rawUnsorted, function(newResult) {
+						rawUnsorted = newResult;
+						callback();
+					});
+				});
+			}
+			forEach(_.range(5), function(item, index)
+			{
+				var done = this.async();
+				var iteration = null;
+				if (index > 0) {
+					iterationIndex = (index*20)-1;
+					if (rawUnsorted[iterationIndex]) {
+						iteration = rawUnsorted[iterationIndex].created_time;
+					} else {
+						iteration = null;
+					}
 				}
+				if ((index > 0 && iteration != null) || index == 0 ) {
+					instagramify(iteration, function()
+					{
+						done();
+					});
+				} else {
+					done();
+				}
+			}, function(notAborted, array)
+			{
+				sortInstagram(rawUnsorted, function(newlySorted)
+				{
+					callback(null, newlySorted);	
+				})
 			});
 		},
 		twitter: function(callback)
@@ -103,80 +178,118 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		} else {
 			var masterObject = [];
 
-			for (var i in results['instagramLocations'])
+			// Get Sentiment First
+			forEach(results['twitter']['statuses'], function(tweet, tweetIndex, array)
 			{
-				var ig = results['instagramLocations'][i];
-				var location = ig[0].location;
-				
-				// Create new popular location Object
-				var popular = {};
-				popular.uuid = md5(location.latitude + "," + location.longitude);
-				popular.name = location.name;
-				popular.instagram = [];
-				popular.tweets = [];
-				popular.foursquare = [];
-				popular.location = {};
+				// Calculate sentiment
+				// var sentimentURL = config.get('alchemy').Endpoint + "?outputMode=json&apikey=" + config.get('alchemy').API_KEY + "&text=" + results['twitter']['statuses'][tweetIndex].text;
+				// request(sentimentURL, function(err, response, body)
+				// {
+				// 	if (err) {
+				// 		console.log(err);
+				// 	}
 
-				// Basic spam checker (removes any object with name that contains .com/.net/.org)
-				if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
-					break;
-				}
-
-				// Populate popular location Object with instagram photos
-				for (photoIndex in ig)
+				// 	if (body && response.statusCode == 200) {
+				// 		var doc = JSON.parse(body);
+				// 		if (doc.status == "OK") {
+				// 			var docSentiment = doc.docSentiment;
+				// 			var sentiment = 0;
+				// 			if (docSentiment.score) {
+				// 				sentiment = docSentiment.score;
+				// 			}
+				// 			results['twitter']['statuses'][tweetIndex].sentiment = sentiment;
+				// 		} else {
+				// 			if (results['twitter']['statuses'][tweetIndex] != undefined) {
+				// 				results['twitter']['statuses'][tweetIndex].sentiment = null;
+				// 			}
+				// 		}
+				// 	} else {
+				// 		if (results['twitter']['statuses'][tweetIndex] != undefined) {
+				// 			results['twitter']['statuses'][tweetIndex].sentiment = null;
+				// 		}
+				// 	}
+				// });
+			}, function(notAborted, array)
+			{
+				for (var i in results['instagramLocations'])
 				{
-					var photo = ig[photoIndex];
+					var ig = results['instagramLocations'][i];
+					var location = ig[0].location;
+					
+					// Create new popular location Object
+					var popular = {};
+					popular.uuid = md5(location.latitude + "," + location.longitude);
+					popular.name = location.name;
+					popular.instagram = [];
+					popular.tweets = [];
+					popular.foursquare = [];
+					popular.location = {};
 
-					if (!photo.location || photo.type != 'image') {
+					// Basic spam checker (removes any object with name that contains .com/.net/.org)
+					if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
 						break;
 					}
 
-					popular.location = photo.location;
+					// Populate popular location Object with instagram photos
+					for (photoIndex in ig)
+					{
+						var photo = ig[photoIndex];
 
-					var photoData = {};
-					photoData.location = photo.location;
-					photoData.created_time = photo.created_time;
-					photoData.link = photo.link;
-					photoData.fullResImageData = photo.images.standard_resolution;
-					photoData.caption = photo.caption;
-
-					popular.instagram.push(photoData);
-				}
-
-				// Populate popular location Object with tweets
-				for (tweetIndex in results['twitter']['statuses'])
-				{
-					var tweet = results['twitter']['statuses'][tweetIndex];
-					
-					// Remove from tweet object -- It's of little value to us
-					if (tweet.geo == null) {
-						results['twitter']['statuses'].splice(tweetIndex, 1);
-					} else {
-						// Compare lat/long
-						var photoLat  = popular.location.latitude;
-						var photoLong = popular.location.longitude;
-						var tweetLat  = tweet.geo.coordinates[0];
-						var tweetLong = tweet.geo.coordinates[1];
-
-						if ((tweetLat > photoLat - .0009 && tweetLat < photoLat + .0009) && (tweetLong > photoLong - .0009 && tweetLong < photoLong + .0009)) {
-							var tweetData = {};
-							tweetData.text = tweet.text;
-							tweetData.id = tweet.id;
-							tweetData.created_at = tweet.created_at;
-							tweetData.geo = tweet.geo;
-							popular.tweets.push(tweetData);
-
-							// Remove from tweet array now that we know where it belongs
-							results['twitter']['statuses'].slice(tweetIndex, 1);
+						if (!photo.location || photo.type != 'image') {
+							break;
 						}
+
+						popular.loc = photo.location;
+
+						var photoData = {};
+						photoData.loc = photo.location;
+						photoData.created_time = photo.created_time;
+						photoData.link = photo.link;
+						photoData.fullResImageData = photo.images.standard_resolution;
+						photoData.caption = photo.caption;
+
+						popular.instagram.push(photoData);
 					}
 
-				}
-				console.log(popular)
-				masterObject.push(popular);
-			}
+					forEach(results['twitter']['statuses'], function (item, tweetIndex, array)
+					{
+						var tweet = results['twitter']['statuses'][tweetIndex];
 
-			res.send(masterObject);
+						if (tweet) {
+
+							// Remove from tweet object -- It's of little value to us
+							if (tweet.geo == null) {
+								results['twitter']['statuses'].splice(tweetIndex, 1);
+							} else {
+								// Compare lat/long
+								var photoLat  = popular.location.latitude;
+								var photoLong = popular.location.longitude;
+								var tweetLat  = tweet.geo.coordinates[0];
+								var tweetLong = tweet.geo.coordinates[1];
+
+								if ((tweetLat > photoLat - .001 && tweetLat < photoLat + .001) && (tweetLong > photoLong - .001 && tweetLong < photoLong + .001)) {
+									var tweetData = {};
+									tweetData.text = tweet.text;
+									tweetData.id = tweet.id;
+									tweetData.created_at = tweet.created_at;
+									tweetData.geo = tweet.geo;
+
+									// Remove from tweet array now that we know where it belongs
+									results['twitter']['statuses'].slice(tweetIndex, 1);
+
+									popular.tweets.push(tweetData);
+									
+								}
+							}
+						}
+					}, function (notAborted, array)
+					{
+						masterObject.push(popular);
+					});
+				}
+			});
+
+			res.json(masterObject);
 		}
 	});
 });
