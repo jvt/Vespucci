@@ -11,7 +11,9 @@
 		"oauth_token_secret": ""
 	},
 	"foursquare": {
-		"FQDN": "https://api.foursquare.com/v2/"
+		"FQDN": "https://api.foursquare.com/v2/",
+		"client_id": "",
+		"client_secret": ""
 	},
 	"alchemy": {
 		"API_KEY": "",
