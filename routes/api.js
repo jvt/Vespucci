@@ -23,7 +23,8 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	async.parallel({
 		instagramLocations: function(callback)
 		{
-			request(config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude, function(error, response, body)
+			var url = config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+			request(url, function(error, response, body)
 			{
 				if (error) {
 					callback(error, null);
