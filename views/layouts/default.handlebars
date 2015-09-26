@@ -1,16 +1,52 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Vespucci</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
-</head>
-<body>
-    {{{ body }}}
+	<head>
+	    <meta charset="utf-8">
+	    <title>Vespucci</title>
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
+	</head>
+	<body>
+	    {{{ body }}}
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-</body>
+	    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+			<script>
+				var autocomplete;
+
+				function initAutocomplete() {
+				  // Create the autocomplete object, restricting the search to geographical
+				  // location types.
+				  autocomplete = new google.maps.places.Autocomplete(
+				      /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+				      {types: ['geocode']});
+
+				  // When the user selects an address from the dropdown, populate the address, prints the lat long
+
+				  autocomplete.addListener('place_changed', function() {
+				  	var place = autocomplete.getPlace().geometry.location;
+				  	var lat = place.H;
+				  	var lng = place.L;
+				  	console.log("Success through autocomplete!")
+				  	console.log("latitude: " + lat);
+				    console.log("longitude: " +  lng);
+				  });
+				}
+				// Button is clicked, sends you based on your current location
+				function geolocate() {
+				  if (navigator.geolocation) {
+				    navigator.geolocation.getCurrentPosition(function(position) {
+				      var lat = position.coords.latitude;
+				      var lng = position.coords.longitude;
+				      console.log("Success through geolocation!")
+				      console.log("latitude: " + lat);
+				      console.log("longitude: " +  lng);
+				    });
+				  }
+				}
+			</script>
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=true&libraries=places&callback=initAutocomplete"
+        async defer></script>
+	</body>
 </html>

@@ -3,13 +3,12 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   text-align: center;
 }
-
 a {
   color: #00B7FF;
 }
 h1 {
 	font-family: Raleway;
-	font-size: 50px;
+	font-size: 70px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 500;
@@ -47,11 +46,12 @@ pre {
 	font-weight: 400;
 	line-height: 18.5714px;
 }
-
 #content {
   width: 70%;
+  position: relative;
+  top: 100px;
 }
-
 #searchBar {
-	height: 30px;
+	position: relative;
+	top: 60px;
 }
