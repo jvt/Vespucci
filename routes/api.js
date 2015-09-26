@@ -182,33 +182,33 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			forEach(results['twitter']['statuses'], function(tweet, tweetIndex, array)
 			{
 				// Calculate sentiment
-				var sentimentURL = config.get('alchemy').Endpoint + "?outputMode=json&apikey=" + config.get('alchemy').API_KEY + "&text=" + results['twitter']['statuses'][tweetIndex].text;
-				request(sentimentURL, function(err, response, body)
-				{
-					if (err) {
-						console.log(err);
-					}
+				// var sentimentURL = config.get('alchemy').Endpoint + "?outputMode=json&apikey=" + config.get('alchemy').API_KEY + "&text=" + results['twitter']['statuses'][tweetIndex].text;
+				// request(sentimentURL, function(err, response, body)
+				// {
+				// 	if (err) {
+				// 		console.log(err);
+				// 	}
 
-					if (body && response.statusCode == 200) {
-						var doc = JSON.parse(body);
-						if (doc.status == "OK") {
-							var docSentiment = doc.docSentiment;
-							var sentiment = 0;
-							if (docSentiment.score) {
-								sentiment = docSentiment.score;
-							}
-							results['twitter']['statuses'][tweetIndex].sentiment = sentiment;
-						} else {
-							if (results['twitter']['statuses'][tweetIndex] != undefined) {
-								results['twitter']['statuses'][tweetIndex].sentiment = null;
-							}
-						}
-					} else {
-						if (results['twitter']['statuses'][tweetIndex] != undefined) {
-							results['twitter']['statuses'][tweetIndex].sentiment = null;
-						}
-					}
-				});
+				// 	if (body && response.statusCode == 200) {
+				// 		var doc = JSON.parse(body);
+				// 		if (doc.status == "OK") {
+				// 			var docSentiment = doc.docSentiment;
+				// 			var sentiment = 0;
+				// 			if (docSentiment.score) {
+				// 				sentiment = docSentiment.score;
+				// 			}
+				// 			results['twitter']['statuses'][tweetIndex].sentiment = sentiment;
+				// 		} else {
+				// 			if (results['twitter']['statuses'][tweetIndex] != undefined) {
+				// 				results['twitter']['statuses'][tweetIndex].sentiment = null;
+				// 			}
+				// 		}
+				// 	} else {
+				// 		if (results['twitter']['statuses'][tweetIndex] != undefined) {
+				// 			results['twitter']['statuses'][tweetIndex].sentiment = null;
+				// 		}
+				// 	}
+				// });
 			}, function(notAborted, array)
 			{
 				for (var i in results['instagramLocations'])
