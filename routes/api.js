@@ -88,6 +88,10 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					callback(true, body)
 				}
 			});
+		},
+		foursquare: function(callback)
+		{
+			callback(null, null)
 		}
 	}, function(error, results)
 	{
