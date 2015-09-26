@@ -224,8 +224,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						}
 					});
 				}
-				console.log(Object.keys(results['instagramLocations']))
-				console.log(_.range(Object.keys(results['instagramLocations']).length))
 				forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
 				{
 					var i = Object.keys(results['instagramLocations'])[index]
@@ -271,38 +269,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						popular.instagram.push(photoData);
 					}
 
-					forEach(results['twitter']['statuses'], function (item, tweetIndex, array)
-					{
-						var tweet = results['twitter']['statuses'][tweetIndex];
 
-						if (tweet) {
-
-							// Remove from tweet object -- It's of little value to us
-							if (tweet.geo == null) {
-								results['twitter']['statuses'].splice(tweetIndex, 1);
-							} else {
-								// Compare lat/long
-								var photoLat  = popular.location.latitude;
-								var photoLong = popular.location.longitude;
-								var tweetLat  = tweet.geo.coordinates[0];
-								var tweetLong = tweet.geo.coordinates[1];
-
-								if ((tweetLat > photoLat - .001 && tweetLat < photoLat + .001) && (tweetLong > photoLong - .001 && tweetLong < photoLong + .001)) {
-									var tweetData = {};
-									tweetData.text = tweet.text;
-									tweetData.id = tweet.id;
-									tweetData.created_at = tweet.created_at;
-									tweetData.geo = tweet.geo;
-
-									// Remove from tweet array now that we know where it belongs
-									results['twitter']['statuses'].slice(tweetIndex, 1);
-
-									popular.tweets.push(tweetData);
-									
-								}
-							}
-						}
-					});
 					var done = this.async();
 					async.parallel({
 						foursquare: function(callback)
@@ -314,13 +281,44 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						},
 						twitter: function(callback)
 						{
-							callback(null, {});
+							var locationTweets = [];
+							forEach(results['twitter']['statuses'], function (item, tweetIndex, array)
+							{
+								var tweet = results['twitter']['statuses'][tweetIndex];
+								if (tweet) {
+									// Remove from tweet object -- It's of little value to us
+									if (tweet.geo == null) {
+										results['twitter']['statuses'].splice(tweetIndex, 1);
+									} else {
+										// Compare lat/long
+										var photoLat  = popular.loc.latitude;
+										var photoLong = popular.loc.longitude;
+										var tweetLat  = tweet.geo.coordinates[0];
+										var tweetLong = tweet.geo.coordinates[1];
+
+										if ((tweetLat > photoLat - .001 && tweetLat < photoLat + .001) && (tweetLong > photoLong - .001 && tweetLong < photoLong + .001)) {
+											var tweetData = {};
+											tweetData.text = tweet.text;
+											tweetData.id = tweet.id;
+											tweetData.created_at = tweet.created_at;
+											tweetData.geo = tweet.geo;
+
+											// Remove from tweet array now that we know where it belongs
+											results['twitter']['statuses'].slice(tweetIndex, 1);
+
+											locationTweets.push(tweetData);	
+										}
+									}
+								}
+							}, function(notAborted, array)
+							{
+								callback(null, locationTweets);
+							});
 						}
 					}, function(error, results)
 					{
 						popular.tweets = results['twitter'];
 						popular.foursquare = results['foursquare'];
-						console.log(results);
 						masterObject.push(popular);
 						done()
 					});
