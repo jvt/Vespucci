@@ -7,6 +7,8 @@ var authSignature = require('oauth-signature');
 
 var request = require('request');
 
+var md5 = require('md5');
+
 var async = require('async');
 
 var ig = require('instagram-node').instagram();
@@ -64,7 +66,8 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				'oauth_token': config.get('twitter').oauth_token,
 				'oauth_version': '1.0',
 				'q': query_search_term,
-				'geocode': '"'+latitude+','+longitude+',2mi"'
+				'geocode': '"'+latitude+','+longitude+',2mi"',
+				'count': 100
 			};
 			var signature = authSignature.generate('GET',
 													config.get('twitter').FQDN + "search/tweets.json",
@@ -72,7 +75,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 													config.get('twitter').consumer_secret,
 													config.get('twitter').oauth_token_secret);
 			var options = {
-				url: config.get('twitter').FQDN + 'search/tweets.json?q='+query_search_term+'&geocode="'+latitude+','+longitude+',2mi"',
+				url: config.get('twitter').FQDN + 'search/tweets.json?q='+query_search_term+'&geocode="'+latitude+','+longitude+',2mi"&count=100',
 				headers: {
 					'Authorization': 'OAuth oauth_consumer_key="'+parameters['oauth_consumer_key']+'", oauth_nonce="'+parameters['oauth_nonce']+'", oauth_signature="'+signature+'", oauth_signature_method="'+parameters['oauth_signature_method']+'", oauth_timestamp="'+parameters['oauth_timestamp']+'", oauth_token="'+parameters['oauth_token']+'", oauth_version="'+parameters['oauth_version']+'"'
 				}
@@ -98,6 +101,73 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		if (error) {
 			res.send({'error': true, 'message': error})
 		} else {
+			var masterObject = [];
+
+			loop1:
+			for (var i in results['instagramLocations'])
+			{
+				var ig = results['instagramLocations'][i];
+				if (ig[0].type != 'image') {
+					continue;
+				}
+				var location = ig[0].location;
+				
+				// Create new popular location Object
+				var popular = {};
+				popular.uuid = md5(location.latitude + "," + location.longitude);
+				popular.name = location.name;
+				popular.instagram = [];
+				popular.tweets = [];
+				popular.foursquare = [];
+				popular.location = {};
+
+				// Populate popular location Object with instagram photos
+				loop2:
+				for (photoIndex in ig)
+				{
+					var photo = ig[photoIndex];
+
+					if (!photo.location) {
+						break loop1;
+					}
+
+					popular.location = photo.location;
+
+					var photoData = {};
+					photoData.location = photo.location;
+					photoData.created_time = photo.created_time;
+					photoData.link = photo.link;
+					photoData.fullResImageData = photo.images.standard_resolution;
+					photoData.caption = photo.caption;
+
+					popular.instagram.push(photoData);
+				}
+
+				// Populate popular location Object with tweets
+				for (tweetIndex in results['twitter']['statuses'])
+				{
+					var tweet = results['twitter']['statuses'][tweetIndex];
+					
+					// Remove from tweet object -- It's of little value to us
+					if (tweet.geo == null) {
+						results['twitter']['statuses'].splice(tweetIndex, 1);
+					} else {
+						// Compare lat/long
+						var photoLat = popular.location.latitude;
+						var photoLong = popular.location.longitude;
+
+						// console.log(photoLong)
+
+						var tweetLat = tweet.geo.coordinates[0];
+						var tweetLong = tweet.geo.coordinates[1];
+
+						// if (() && ())
+					}
+
+				}
+				console.log(popular)
+			}
+
 			res.send(results)
 		}
 	});
