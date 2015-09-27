@@ -165,10 +165,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		var url = process.env.fs_fqdn + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ process.env.fs_client_id +'&client_secret=' + process.env.fs_client_secret + '&v=20140806';
 		request(url, function(error, response, body)
 		{
-			if (error) {
+			if (error || !body) {
 				callback(error, null);
 			}
-			console.log(body);
 			var fs = JSON.parse(body);
 			var v = fs.response['venues'];
 			if (v.length > 0) {
