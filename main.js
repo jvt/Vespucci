@@ -14,11 +14,12 @@ var api = require('./routes/api');
 var app = express();
 var hbs = exphbs.create({ defaultLayout: 'default' });
 
-fs.exists(__dirname + '/.env', function(exists)
-{
-	env(__dirname + '/.env');
-});
-
+if (process.env.NODE_ENV == "development") {
+	fs.exists(__dirname + '/.env', function(exists)
+	{
+		env(__dirname + '/.env');
+	});
+}
 
 app.use(function (req, res, next) {
 
