@@ -30,6 +30,14 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		res.json({ 'error': true, 'message': 'PARAMETER NaN' });
 	}
 
+	/**
+	 * name: sortInstagram
+	 * parameters:
+	 * 		@unsorted: Array
+	 * 		@callback: Function
+	 * return: none
+	 * description: Sorts an array of Instagram photos by their location IDs
+	 */
 	function sortInstagram(unsorted, callback)
 	{
 		var locations = {};
@@ -46,6 +54,15 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		});
 	}
 
+	/**
+	 * name: pushIntoArray
+	 * parameters:
+	 * 		@toBeExploded: Array
+	 *		@toBePushed: Array
+	 * 		@callback: Function
+	 * return: none
+	 * description: Pushes all objects in the toBeExploded array into the toBePushed array
+	 */
 	function pushIntoArray(toBeExploded, toBePushed, callback)
 	{
 		var newArray = toBePushed;
@@ -58,6 +75,14 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		});
 	}
 
+	/**
+	 * name: loadInstagramPhotos
+	 * parameters:
+	 * 		@MAX_TIMESTAMP: Integer
+	 * 		@callback: Function
+	 * return: none
+	 * description: Retrieves 20 Instagram photos. Uses MAX_TIMESTAMP to psuedo-paginate
+	 */
 	function loadInstagramPhotos(MAX_TIMESTAMP, callback)
 	{
 		var url;
@@ -145,6 +170,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				'geocode': '"'+latitude+','+longitude+',2mi"',
 				'count': 100
 			};
+			/**
+			 * Generate OAuth signature
+			 */
 			var signature = authSignature.generate('GET',
 													process.env.twitter_fqdn + "search/tweets.json",
 													parameters,
@@ -156,6 +184,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					'Authorization': 'OAuth oauth_consumer_key="'+parameters['oauth_consumer_key']+'", oauth_nonce="'+parameters['oauth_nonce']+'", oauth_signature="'+signature+'", oauth_signature_method="'+parameters['oauth_signature_method']+'", oauth_timestamp="'+parameters['oauth_timestamp']+'", oauth_token="'+parameters['oauth_token']+'", oauth_version="'+parameters['oauth_version']+'"'
 				}
 			};
+			/**
+			 * Make API request to Twitter
+			 */
 			request(options, function(error, response, body)
 			{
 				if (error) {
@@ -175,6 +206,16 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		} else {
 			var masterObject = [];
 			
+			/**
+			 * name: getFoursquareInformation
+			 * parameters:
+			 * 		@name: String
+			 * 		@latitude: Float
+			 *		@longitude: Float
+			 * 		@callback: Function
+			 * return: none
+			 * description: Retrieves Foursquare's data for a specific place based on the name/latitute/longitude
+			 */
 			function getFoursquareInformation(name, latitude, longitude, callback)
 			{
 				var url = process.env.fs_fqdn + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ process.env.fs_client_id +'&client_secret=' + process.env.fs_client_secret + '&v=20140806';
@@ -192,6 +233,9 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					}
 				});
 			}
+			/**
+			 * Iterate through the instagramLocations object and create a new object by the key
+			 */
 			forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
 			{
 				var i = Object.keys(results['instagramLocations'])[index]
@@ -234,11 +278,17 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					popular.instagram.push(photoData);
 				}
 
-
+				/**
+				 * Force section to run async
+				 */
 				var done = this.async();
 				async.parallel({
 					foursquare: function(callback)
 					{
+						/**
+						 * Load Foursquare data
+						 * Note: EXTREMELY INEFFICIENT AND SLOW --- APPLICATION BOTTLENECK
+						 */
 						getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
 						{
 							callback(null, results);
@@ -282,13 +332,24 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					}
 				}, function(error, results)
 				{
+					/**
+					 * Append to popular object
+					 */
 					popular.tweets = results['twitter'];
 					popular.foursquare = results['foursquare'];
+					
+					/**
+					 * Push now-filled object into master array
+					 */
 					masterObject.push(popular);
-					done()
+
+					done();
 				});
 			}, function(notAborted, array)
 			{
+				/**
+				 * Send master JSON array
+				 */
 				res.json(masterObject);
 			});
 		}
