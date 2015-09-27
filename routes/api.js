@@ -134,6 +134,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		location.instagram = instalinks;
 		location.instagramCount = instagramCount;
 		location.instagramScore = instagramScore;
+
 		if (obj.foursquare) {
 			if (obj.foursquare.location) {
 				location.address = obj.foursquare.location.formattedAddress[0];
@@ -383,18 +384,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				 */
 				var done = this.async();
 				async.parallel({
-					foursquare: function(callback)
-					{
-						/**
-						 * Load Foursquare data
-						 * Note: EXTREMELY INEFFICIENT AND SLOW --- APPLICATION BOTTLENECK
-						 */
-						// getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
-						// {
-						// 	callback(null, results);
-						// });
-						callback(null, null);
-					},
 					twitter: function(callback)
 					{
 						var locationTweets = [];
@@ -449,15 +438,16 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			{
 				calculateTop(masterObject, function(topLocations)
 				{
-					forEach(topLocations, function(location, top)
+					async.times(topLocations.length, function(n, next)
 					{
-						getFoursquareInformation(location.name, location.loc.latitude, location.loc.longitude, function(error, fs)
+						getFoursquareInformation(topLocations[n].name, topLocations[n].loc.latitude, topLocations[n].loc.longitude, function(error, fs)
 						{
 							if (!error) {
-								topLocations.foursquare = fs;
+								topLocations[n].foursquare = fs;
+								next(null, fs);
 							}
 						});
-					}, function(notAborted, array)
+					}, function (err, results)
 					{
 						var containmentObject = {
 							"masterData": masterObject,
