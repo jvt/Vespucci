@@ -16,8 +16,8 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false&libraries=places&callback=initAutocomplete" async defer></script>
 	<script type="text/javascript">
-		var globaljson;
-		
+		var globaljson, sourceLat, sourceLng;
+		var maxNumberLocations = 10;
 
 		// * creates a map at a specified latitude and longitude
 		function instantiateMap(alat, along) {
@@ -34,7 +34,7 @@
 			var contentCount = 0;
 			for(var insta in json[obj].instagram) {
 				instalinks.push(json[obj].instagram[insta].link);
-				count += 2;
+				contentCount += 2;
 			}
 			var location = {};
 			location.lat = json[obj].loc.latitude;
@@ -42,12 +42,20 @@
 			location.eventname = json[obj].loc.name;
 			location.instagram = instalinks;
 			location.count = contentCount;
-			location.address = json[obj].foursquare.location.formattedAddress[0];
-			if (json[obj].foursquare.contact.formattedPhone) {
-				location.phone = json[obj].foursquare.contact.formattedPhone;
+			if(json[obj].foursquare) {
+				if(json[obj].foursquare.location){
+					location.address = json[obj].foursquare.location.formattedAddress[0];
+				}
 			}
-			if(json[obj].stats.checkinsCount){
-				location.visitors = json[obj].foursquare.stats.checkinsCount;
+			if (json[obj].foursquare) {
+				if(json[obj].foursquare.contact){
+					location.phone = json[obj].foursquare.contact.formattedPhone;
+				}
+			}
+			if(json[obj].foursquare){
+				if(json[obj].foursquare.stats){
+					location.visitors = json[obj].foursquare.stats.checkinsCount;
+				}
 			}
 			location.placename = json[obj].foursquare.name;
 			return location;
@@ -65,11 +73,10 @@
 		}
 
 		function initMap() {
-					var maxNumberLocations = 10;
 				  var startPoint = {
 				    lat: 33.783315,
 				    lng: -84.385
-				  };				    
+				  };				  
 				  var map = instantiateMap(startPoint.lat, startPoint.lng);
 
 				  var update = startPoint.lng;
@@ -133,20 +140,26 @@
 				    infowindow.open(map, marker);
 				  });
 
-			//calls gets all data from api
-			gettext = function(url, callback) // How can I use this callback?
+			// $("#locationbutton").click(function() {
+			// 	gettext(null, mycallback); 
+			// });
+		}
+		
+
+
+		function gettext (url, callback) {
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
 			{
-				var request = new XMLHttpRequest();
-				request.onreadystatechange = function()
+				if (request.readyState == 4 && request.status == 200)
 				{
-					if (request.readyState == 4 && request.status == 200)
-					{
-						mycallback(request.responseText); // Another callback here
-					}
-				}; 
-				request.open('GET', 'https://277b7b9e.ngrok.com/api/search/' + officialLat + "/" + officialLong);
-				request.send();
-			}
+					mycallback(request.responseText); // Another callback here
+				}
+			}; 
+			request.open('GET', 'http://vespucci.me/api/search/' + sourceLat + "/" + sourceLng);
+			request.send();
+		}
+
 			//populate the map
 			function mycallback(data) {
 				//object that essentially acts as a hashmap
@@ -166,6 +179,8 @@
 					console.log(uuid + ': ' + counter);
 					uuidToCount[uuid] = counter;
 				}
+
+
 				var desiredUUIDs = [];
 				for(var i = 0 ; i < maxNumberLocations ; i++) {
 					var largestValue = -1;
@@ -194,11 +209,27 @@
 						}
 					}
 				}
-				
+
+				for(locationIndex in locations) {
+				  console.log(locations[locationIndex].lat);
+				  console.log(locations[locationIndex].lng);
+				  //addCircle(locations[locationIndex].lat, locations[locationIndex].lng, 1, 1000);
+
+				  var cityCircle = new google.maps.Circle({
+				    strokeColor: '#FF0000',
+				    strokeOpacity: 0.8,
+				    strokeWeight: 2,
+				    fillColor: '#FF0000',
+				    fillOpacity: 0.35,
+				    map: map,
+				    center: {lat: locations[locationIndex].lat, lng:locations[locationIndex].lng},
+				    radius: locations[locationIndex].count * 20
+				  });
+				}	
 			}
-			gettext(null, mycallback); 
-		}
 		
+
+
 		window.onload = function() {
 			initMap();
 		}
@@ -233,9 +264,10 @@
 		  	console.log("Success through autocomplete!")
 		  	console.log("latitude: " + lat);
 		    console.log("longitude: " +  lng);
-		    // GET request /API/SEARCH/{LAT}/{LNG}/
-		    	// Sets to main page with coordinates as the starting center of the circle
-		    	// No pin
+
+		    sourceLat = lat;
+		    sourceLng = lng;
+		    gettext(null, mycallback);
 		    animateTransition();
 		  });
 		}
@@ -262,9 +294,10 @@
 		      console.log("Success through geolocation!");
 		      console.log("latitude: " + lat);
 		      console.log("longitude: " +  lng);
-		      // GET request /API/SEARCH/{LAT}/{LNG}/
-		    		// Sets to main page with coordinates as the starting center of the circle
-		    		// Set pin to the center of the page
+
+		      sourceLat = lat;
+		      sourceLng = lng;
+		    	gettext(null, mycallback);
 		    	animateTransition();
 		    });
 		  }
@@ -273,10 +306,10 @@
 		// Transition from front to main
 		function animateTransition() {
 	    	$("#mainlogo").fadeOut('slow', function() {
-	    		$("#searchBar").animate({
+	    		$("#searchBar").css({
 	    			"top": "-100px",
 	    			"left": "50px"
-	    		}, 'slow');
+	    		});
 	    		$("#smalllogo").fadeIn('slow');
 	    		$("#headerbackground").css({
 	    			"backgroundColor": "#AA4652"
@@ -351,7 +384,7 @@
 			draggable: false,
 		    mapTypeId: google.maps.MapTypeId.ROADMAP,
 		    center: myLatLng,
-		    zoom: 15,
+		    zoom: 14,
 		    styles: styleArray
 		  };
 		  map = new google.maps.Map(document.getElementById('map'), mapOptions);
