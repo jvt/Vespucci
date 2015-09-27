@@ -168,6 +168,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			if (error) {
 				callback(error, null);
 			}
+			console.log(body);
 			var fs = JSON.parse(body);
 			var v = fs.response['venues'];
 			if (v.length > 0) {
