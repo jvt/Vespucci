@@ -227,7 +227,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
 				{
 					var i = Object.keys(results['instagramLocations'])[index]
-					console.log(i)
 
 					var ig = results['instagramLocations'][i.toString()];
 					var location = ig[0].location;
@@ -240,8 +239,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					popular.tweets = [];
 					popular.foursquare = {};
 					popular.location = {};
-
-					console.log(location.name)
 
 					// Basic spam checker (removes any object with name that contains .com/.net/.org)
 					if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
