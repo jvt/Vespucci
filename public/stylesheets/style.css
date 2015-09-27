@@ -89,6 +89,9 @@ pre {
 	margin: 0; 
 	z-index: 1;
 }
+a:hover {
+	color: white;
+}
 
 a[href^="http://maps.google.com/maps"]{display:none !important}
 a[href^="https://maps.google.com/maps"]{display:none !important}
@@ -111,11 +114,12 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 	font-size: 2em;
 	position: relative;
 	top:3px;
+	text-shadow: 1px 1px grey;
 }
 #locationbutton {
 	background-color: #C4515E;
 	color: white;
-	padding-top: 8px;
+	padding-top: 8px; 
 	padding-bottom: 4px;
 }
 #headerbar {
@@ -124,3 +128,4 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 	margin: 0 auto;
 	z-index: 1;
 }
+
