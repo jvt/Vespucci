@@ -156,12 +156,8 @@
 
 		//populate the map
 		function mycallback(data) {
-
-			for (locationIndex in data) {
-				console.log(data[locationIndex].lat);
-				console.log(data[locationIndex].lng);
-			  	//addCircle(data[locationIndex].lat, data[locationIndex].lng, 1, 1000);
-
+			var json = $.parseJSON(data).blurbData;
+			for (locationIndex in json) {
 			  	var cityCircle = new google.maps.Circle({
 			  		strokeColor: '#FF0000',
 			  		strokeOpacity: 0.8,
@@ -169,12 +165,12 @@
 			  		fillColor: '#FF0000',
 			  		fillOpacity: 0.35,
 			  		map: map,
-			  		center: {lat: data[locationIndex].lat, lng:data[locationIndex].lng},
-			  		radius: data[locationIndex].count * 20
+			  		center: {lat: json[locationIndex].lat, lng:json[locationIndex].lng},
+			  		radius: json[locationIndex].instagramScore * 20
 			  	});
 			}
 
-			var uluru = {lat: data[locationIndex].lat, lng: data[locationIndex].lng};
+			var uluru = {lat: json[locationIndex].lat, lng: json[locationIndex].lng};
 
 			var contentString = '<div id="content">'+
 			'<div id="siteNotice">'+
@@ -198,7 +194,7 @@
 			'</div>';
 
 			var infowindow = new google.maps.InfoWindow({
-			  	position: {lat: data[locationIndex].lat, lng: data[locationIndex].lng},
+			  	position: {lat: json[locationIndex].lat, lng: json[locationIndex].lng},
 				content: contentString
 			});
 
