@@ -128,7 +128,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				sortInstagram(rawUnsorted, function(newlySorted)
 				{
 					callback(null, newlySorted);	
-				})
+				});
 			});
 		},
 		twitter: function(callback)
