@@ -16,7 +16,7 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false&libraries=places&callback=initAutocomplete" async defer></script>
 	<script type="text/javascript">
-		var globaljson, sourceLat, sourceLng;
+		var globaljson, sourceLat, sourceLng, infowindow;
 		var maxNumberLocations = 10;
 
 		// * creates a map at a specified latitude and longitude
@@ -168,8 +168,6 @@
                 	instaLink = "";
                 }
 
-
-                //integrate last!!
                 var address = json[locationIndex].address;
                 var phone = json[locationIndex].phone;
                 var visitors = json[locationIndex].visitors;
@@ -230,8 +228,24 @@
 			  	});
 
 			  	google.maps.event.addListener(cityCircle, 'click', function() {
-    			this.info.open(map, this);
-				});
+	    			if (infowindow) infowindow.close();
+	    			infowindow = this.info;
+	    			this.info.open(map, this);
+	    			infowindow.open(map, marker);
+					});
+
+					google.maps.Map.prototype.clearMarkers = function() {
+				    if(infowindow) {
+				      infowindow.close();
+				    }
+				    
+				    for(var i=0; i<this.markers.length; i++){
+				      this.markers[i].set_map(null);
+				    }
+				  };
+
+
+
 			}
 		}	
 
