@@ -112,7 +112,7 @@
 						mycallback(request.responseText); // Another callback here
 					}
 				}; 
-				request.open('GET', 'http://vespucci.me/' + officialLat + "/" + officialLong);
+				request.open('GET', 'http://vespucci.me/api/search/' + officialLat + "/" + officialLong);
 				request.send();
 			}
 			//populate the map
