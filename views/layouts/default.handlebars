@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-		<meta charset="utf-8">
-		<title>Vespucci</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
-		<style type="text/css">
-			html, body { height: 100%; margin: 0; padding: 0; }
-			#map { height: 100%; }
-		</style>
+	<meta charset="utf-8">
+	<title>Vespucci</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway">
+	<style type="text/css">
+		html, body { height: 100%; margin: 0; padding: 0; }
+		#map { height: 100%; }
+	</style>
 </head>
 <body>
 	{{{ body }}}
@@ -73,85 +73,73 @@
 		}
 
 		function initMap() {
-				  var startPoint = {
-				    lat: 33.783315,
-				    lng: -84.385
-				  };				  
-				  var map = instantiateMap(startPoint.lat, startPoint.lng);
+			var startPoint = {
+				lat: 33.783315,
+				lng: -84.385
+			};				  
+			var map = instantiateMap(startPoint.lat, startPoint.lng);
 
-				  var update = startPoint.lng;
-				  var timerDelay = 800;
-				  var eventListen = false;
+			var update = startPoint.lng;
+			var timerDelay = 800;
+			var eventListen = false;
 
-				  panningEffect();
+			panningEffect();
 
-				  function panningEffect(){
-					  if (!eventListen){
-					  	update += Math.random() * (0.02 - 0.050) + 0.050;
-					  	startPoint = {
-						    lat: 33.783315 + (Math.random() * (0.02 - 0.050) + 0.050),
-						    lng: update
-						  };
-						  map.panTo(startPoint);
-					  	setTimeout(panningEffect, timerDelay);
-						  timerDelay += 800;
+			function panningEffect(){
+				if (!eventListen){
+					update += Math.random() * (0.02 - 0.050) + 0.050;
+					startPoint = {
+						lat: 33.783315 + (Math.random() * (0.02 - 0.050) + 0.050),
+						lng: update
+					};
+					map.panTo(startPoint);
+					setTimeout(panningEffect, timerDelay);
+					timerDelay += 800;
 
-						  $("#locationbutton").click(function() {
-						  	eventListen = true;
-						  });
-						  $("#autocomplete").focus(function() {
-						  	eventListen = true;
-						  });
-					  }
-					}			  
+					$("#locationbutton").click(function() {
+						eventListen = true;
+					});
+					$("#autocomplete").focus(function() {
+						eventListen = true;
+					});
+				}
+			}			  
 
-					var contentString = '<div id="content">'+
-				      '<div id="siteNotice">'+
-				      '</div>'+
-				      '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-				      '<div id="bodyContent">'+
-				      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-				      'sandstone rock formation in the southern part of the '+
-				      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-				      'south west of the nearest large town, Alice Springs; 450&#160;km '+
-				      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-				      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-				      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-				      'Aboriginal people of the area. It has many springs, waterholes, '+
-				      'rock caves and ancient paintings. Uluru is listed as a World '+
-				      'Heritage Site.</p>'+
-				      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-				      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-				      '(last visited June 22, 2009).</p>'+
-				      '</div>'+
-				      '</div>';
+			var contentString = '<div id="content">'+
+			'<div id="siteNotice">'+
+			'</div>'+
+			'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+			'<div id="bodyContent">'+
+			'<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+			'sandstone rock formation in the southern part of the '+
+			'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+			'south west of the nearest large town, Alice Springs; 450&#160;km '+
+			'(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+			'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+			'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+			'Aboriginal people of the area. It has many springs, waterholes, '+
+			'rock caves and ancient paintings. Uluru is listed as a World '+
+			'Heritage Site.</p>'+
+			'<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+			'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+			'(last visited June 22, 2009).</p>'+
+			'</div>'+
+			'</div>';
 
-				  var infowindow = new google.maps.InfoWindow({
-				    content: contentString,
-				    maxWidth: 400
-				  });
+			var infowindow = new google.maps.InfoWindow({
+				content: contentString,
+				maxWidth: 400
+			});
 
-				  var marker = new google.maps.Marker({
-				    position: startPoint,
-				    map: map,
-				    title: 'Uluru (Ayers Rock)'
-				  });
-
+			var marker = new google.maps.Marker({
+				position: startPoint,
+				map: map,
+				title: 'Uluru (Ayers Rock)'
+			});
 
 			$(document).ready(function(){ infowindow.open(map,marker); });
 
-/*
-				  marker.addListener('click', function() {
-				    infowindow.open(map, marker);
-				  });
-*/
-
-			// $("#locationbutton").click(function() {
-			// 	gettext(null, mycallback); 
-			// });
 		}
-		
-
 
 		function gettext (url, callback) {
 			var request = new XMLHttpRequest();
@@ -166,105 +154,58 @@
 			request.send();
 		}
 
-			//populate the map
-			function mycallback(data) {
-				//object that essentially acts as a hashmap
-				var uuidToCount = {};
-				var counter = 0;
-				var json = JSON.parse(data);
-				globaljson = json;
-				for(var entryIndex in json) {
-					counter = 0;
-					var uuid = json[entryIndex].uuid;
-					for(var twitterEntryIndex in json[entryIndex].tweets) {
-						counter = counter + 1;
-					}
-					for(var instagramEntryIndex in json[entryIndex].instagram) {
-						counter = counter + 2;
-					}
-					console.log(uuid + ': ' + counter);
-					uuidToCount[uuid] = counter;
-				}
+		//populate the map
+		function mycallback(data) {
 
+			for(locationIndex in data) {
+				console.log(data[locationIndex].lat);
+				console.log(data[locationIndex].lng);
+			  //addCircle(data[locationIndex].lat, data[locationIndex].lng, 1, 1000);
 
-				var desiredUUIDs = [];
-				for(var i = 0 ; i < maxNumberLocations ; i++) {
-					var largestValue = -1;
-					var largestKey = "";
-					console.log('swag');
-					for(var key in uuidToCount) {
-							if(uuidToCount[key] > largestValue && desiredUUIDs.indexOf(key) == -1) {
-								largestValue = uuidToCount[key];
-								largestKey = key;
-							}
-					}
-					desiredUUIDs.push(largestKey);
-					delete uuidToCount.largestKey;
-				}
-				
-				/**
-					vvvvv TEJAS THIS IS THE LIST  vvvvvv
-				**/
-				locations = [];
-				
-				//populating the list, calls makeLocation which builds the location object
-				for(var i = 0; i < desiredUUIDs.length; i++) {
-					for(var obj in json){
-						if (json[obj].uuid === desiredUUIDs[i]) {
-							locations.push(makeLocation(json, obj));
-						}
-					}
-				}
-
-				for(locationIndex in locations) {
-				  console.log(locations[locationIndex].lat);
-				  console.log(locations[locationIndex].lng);
-				  //addCircle(locations[locationIndex].lat, locations[locationIndex].lng, 1, 1000);
-
-				  var cityCircle = new google.maps.Circle({
-				    strokeColor: '#FF0000',
-				    strokeOpacity: 0.8,
-				    strokeWeight: 2,
-				    fillColor: '#FF0000',
-				    fillOpacity: 0.35,
-				    map: map,
-				    center: {lat: locations[locationIndex].lat, lng:locations[locationIndex].lng},
-				    radius: locations[locationIndex].count * 20
-				  });
-				}	
+			  var cityCircle = new google.maps.Circle({
+			  	strokeColor: '#FF0000',
+			  	strokeOpacity: 0.8,
+			  	strokeWeight: 2,
+			  	fillColor: '#FF0000',
+			  	fillOpacity: 0.35,
+			  	map: map,
+			  	center: {lat: data[locationIndex].lat, lng:data[locationIndex].lng},
+			  	radius: data[locationIndex].count * 20
+			  });
+			}	
 
 
 
 
 
 
-  var uluru = {lat: locations[locationIndex].lat, lng: locations[locationIndex].lng};
+			var uluru = {lat: data[locationIndex].lat, lng: data[locationIndex].lng};
 
-  var contentString = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-      '<div id="bodyContent">'+
-      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-      'sandstone rock formation in the southern part of the '+
-      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-      'south west of the nearest large town, Alice Springs; 450&#160;km '+
-      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-      'Aboriginal people of the area. It has many springs, waterholes, '+
-      'rock caves and ancient paintings. Uluru is listed as a World '+
-      'Heritage Site.</p>'+
-      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-      '(last visited June 22, 2009).</p>'+
-      '</div>'+
-      '</div>';
+			var contentString = '<div id="content">'+
+			'<div id="siteNotice">'+
+			'</div>'+
+			'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+			'<div id="bodyContent">'+
+			'<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+			'sandstone rock formation in the southern part of the '+
+			'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+			'south west of the nearest large town, Alice Springs; 450&#160;km '+
+			'(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+			'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+			'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+			'Aboriginal people of the area. It has many springs, waterholes, '+
+			'rock caves and ancient paintings. Uluru is listed as a World '+
+			'Heritage Site.</p>'+
+			'<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+			'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+			'(last visited June 22, 2009).</p>'+
+			'</div>'+
+			'</div>';
 
-  var infowindow = new google.maps.InfoWindow({
-  	position: {lat: locations[locationIndex].lat, lng: locations[locationIndex].lng},
-    content: contentString
-  });
+			var infowindow = new google.maps.InfoWindow({
+				position: {lat: data[locationIndex].lat, lng: data[locationIndex].lng},
+				content: contentString
+			});
 
 			$(document).ready(function(){ infowindow.open(map,cityCircle); });
 
@@ -287,10 +228,10 @@
 
 
 
-				//create window at lat: locations[locationIndex].lat, lng:locations[locationIndex].lng
+			//create window at lat: locations[locationIndex].lat, lng:locations[locationIndex].lng
 
-			}
-		
+		}
+
 
 
 		window.onload = function() {
@@ -299,184 +240,186 @@
 
 
 		function initAutocomplete() {
-		  // Create the autocomplete object
+			// Create the autocomplete object
 
-		  autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
-	  		types: ['geocode']
-	  	});
+			autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
+				types: ['geocode']
+			});
 
-		  // When the user selects an address from the dropdown, populate the address, sends the lat long
-		  autocomplete.addListener('place_changed', function() {
-		  	var place = autocomplete.getPlace().geometry.location;
-		  	var lat = place.H;
-		  	var lng = place.L;
+			// When the user selects an address from the dropdown, populate the address, sends the lat long
+			autocomplete.addListener('place_changed', function() {
+				var place = autocomplete.getPlace().geometry.location;
+				var lat = place.H;
+				var lng = place.L;
 
-		  	var currentLatLng = {
-			    lat: lat,
-			    lng: lng
-			  };
+				var currentLatLng = {
+					lat: lat,
+					lng: lng
+				};
 
-		    map.panTo(currentLatLng);
-		    var marker = new google.maps.Marker({
-				  position: currentLatLng,
-				  map: map,
-				  title: 'Hello World!'
+				map.panTo(currentLatLng);
+				var marker = new google.maps.Marker({
+					position: currentLatLng,
+					map: map,
+					title: 'Hello World!'
 				});
 				var marker = addMarker(currentLatLng, map, 'Hello World!');
 
-		  	console.log("Success through autocomplete!")
-		  	console.log("latitude: " + lat);
-		    console.log("longitude: " +  lng);
+				console.log("Success through autocomplete!")
+				console.log("latitude: " + lat);
+				console.log("longitude: " +  lng);
 
-		    sourceLat = lat;
-		    sourceLng = lng;
-		    gettext(null, mycallback);
-		    animateTransition();
-		  });
+				sourceLat = lat;
+				sourceLng = lng;
+				gettext(null, mycallback);
+				animateTransition();
+			});
 		}
 
 		// Button is clicked, sends lat and long based on your current location
 		function geolocate() {
-		  if (navigator.geolocation) {
-		    navigator.geolocation.getCurrentPosition(function(position) {
-		      var lat = position.coords.latitude;
-		      var lng = position.coords.longitude;
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					var lat = position.coords.latitude;
+					var lng = position.coords.longitude;
 
-		      var currentLatLng = {
-				    lat: lat,
-				    lng: lng
-				  };
-		      map.panTo(currentLatLng);
-		      var marker = new google.maps.Marker({
-					  position: currentLatLng,
-					  map: map,
-					  title: 'Hello World!'
+					var currentLatLng = {
+						lat: lat,
+						lng: lng
+					};
+					map.panTo(currentLatLng);
+					var marker = new google.maps.Marker({
+						position: currentLatLng,
+						map: map,
+						title: 'Hello World!'
 					});
 					var marker = addMarker(currentLatLng, map, 'Hello World!');
 
-		      console.log("Success through geolocation!");
-		      console.log("latitude: " + lat);
-		      console.log("longitude: " +  lng);
+					console.log("Success through geolocation!");
+					console.log("latitude: " + lat);
+					console.log("longitude: " +  lng);
 
-		      sourceLat = lat;
-		      sourceLng = lng;
-		    	gettext(null, mycallback);
-		    	animateTransition();
-		    });
-		  }
+					sourceLat = lat;
+					sourceLng = lng;
+					gettext(null, mycallback);
+					animateTransition();
+				});
+			}
 		}
 
 		// Transition from front to main
 		function animateTransition() {
-	    	$("#mainlogo").fadeOut('slow', function() {
-	    		$("#searchBar").css({
-	    			"top": "-100px",
-	    			"left": "50px"
-	    		});
-	    		$("#smalllogo").fadeIn('slow');
-	    		$("#headerbackground").css({
-	    			"backgroundColor": "#AA4652"
-	    		});
-	    		$("#headercontent").css({
-	    			"width": "90%"
-	    		});
-	    		$("#blur").css({
-	    			"display": "none"
-	    		})
-	    	});
+			$("#mainlogo").fadeOut('slow', function() {
+				$("#searchBar").css({
+					"top": "-100px",
+					"left": "50px"
+				});
+				$("#smalllogo").fadeIn('slow');
+				$("#headerbackground").css({
+					"backgroundColor": "#AA4652"
+				});
+				$("#headercontent").css({
+					"width": "90%"
+				});
+				$("#blur").css({
+					"display": "none"
+				})
+			});
 		}
 
 
 		/*
-	* latitude, longitude, sentiment, size. Creates a dot on the map
-	*/
-		function addCircle(alat, along, sent, size) {
-			var fillColor = '#FF0000';
-			if(sent > .6) {
-				fillColor = '#008000';
-			} else if (sent > -.7) {
-				fillColor = '#FFFF00';
-			}
-			var cityCircle = new google.maps.Circle({
-		      strokeColor: fillColor,
-		      strokeOpacity: 0.8,
-		      strokeWeight: 0,
-		      fillColor: fillColor,
-		      fillOpacity: 0.35,
-		      map: map,
-		      center: {lat: alat, lng: along},
-		      radius: size * 1000
-		    });
-		    return cityCircle;
-		}
+		 * latitude, longitude, sentiment, size. Creates a dot on the map
+		 */
+		 function addCircle(alat, along, sent, size) {
+		 	var fillColor = '#FF0000';
+		 	if(sent > .6) {
+		 		fillColor = '#008000';
+		 	} else if (sent > -.7) {
+		 		fillColor = '#FFFF00';
+		 	}
+		 	var cityCircle = new google.maps.Circle({
+		 		strokeColor: fillColor,
+		 		strokeOpacity: 0.8,
+		 		strokeWeight: 0,
+		 		fillColor: fillColor,
+		 		fillOpacity: 0.35,
+		 		map: map,
+		 		center: {lat: alat, lng: along},
+		 		radius: size * 1000
+		 	});
+		 	return cityCircle;
+		 }
+
 		/*
-		* creates a map at a specified latitude and longitude
-		*/
+		 * creates a map at a specified latitude and longitude
+		 */
 		function instantiateMap(alat, along) {
-		  var myLatLng = {lat: alat, lng: along};
+			var myLatLng = {lat: alat, lng: along};
 
 
-		  var styleArray = [
-		    {
-		      featureType: "all",
-		      stylers: [
-		       { saturation: -100 }
-		      ]
-		    },{
-		      featureType: "road.arterial",
-		      elementType: "geometry",
-		      stylers: [
-		        { hue: "#00ffee" },
-		        { saturation: 50 }
-		      ]
-		    },{
-		      featureType: "poi.business",
-		      elementType: "labels",
-		      stylers: [
-		        { visibility: "off" }
-		      ]
-		    }
-		  ];
-		  var mapOptions = {
-		  	disableDefaultUI: true,
-		  	disableDoubleClickZoom: true,
-		  	scrollwheel: false,
-			navigationControl: false,
-			mapTypeControl: false,
-			scaleControl: false,
-			draggable: false,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    center: myLatLng,
-		    zoom: 13,
-		    styles: styleArray
-		  };
-		  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+			var styleArray = [
+			{
+				featureType: "all",
+				stylers: [
+				{ saturation: -100 }
+				]
+			},{
+				featureType: "road.arterial",
+				elementType: "geometry",
+				stylers: [
+				{ hue: "#00ffee" },
+				{ saturation: 50 }
+				]
+			},{
+				featureType: "poi.business",
+				elementType: "labels",
+				stylers: [
+				{ visibility: "off" }
+				]
+			}
+			];
+			var mapOptions = {
+				disableDefaultUI: true,
+				disableDoubleClickZoom: true,
+				scrollwheel: false,
+				navigationControl: false,
+				mapTypeControl: false,
+				scaleControl: false,
+				draggable: false,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				center: myLatLng,
+				zoom: 13,
+				styles: styleArray
+			};
+			map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-		  return map;
+			return map;
 		}
+
     	/*
-    	* latitude, longitude, sentiment, size. Creates a dot on the map
-    	*/
-		function addMarker(currentLatLng, map, title) {
-		  var marker = new google.maps.Marker({
-		    position: currentLatLng,
-		    map: map,
-		    title: 'Hello World!'
-		  });
-		  return marker;
-		}
-					
-	</script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<script>
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    	 * latitude, longitude, sentiment, size. Creates a dot on the map
+    	 */
+    	function addMarker(currentLatLng, map, title) {
+    		var marker = new google.maps.Marker({
+    			position: currentLatLng,
+    			map: map,
+    			title: 'Hello World!'
+    		});
+    		return marker;
+    	}
 
-	  ga('create', 'UA-54131867-7', 'auto');
-	  ga('send', 'pageview');
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+    	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-	</script>
+    	ga('create', 'UA-54131867-7', 'auto');
+    	ga('send', 'pageview');
+
+    </script>
 </body>
 </html>
