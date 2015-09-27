@@ -106,6 +106,134 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		});
 	}
 
+	/**
+	 * name: loadInstagramPhotos
+	 * parameters:
+	 * 		@obj: Object
+	 * return: @location Object
+	 * description: Organizes data to be used in the content-blurbs 
+	 */
+	function makeLocation(obj)
+	{
+		var instalinks = [];
+		var instagramScore = 0;
+		var instagramCount = obj.instagram.length;
+
+		for (var insta in obj.instagram)
+		{
+			instalinks.push(obj.instagram[insta].link);
+			instagramScore += 2;
+		}
+
+		// Create location object
+		var location = {};
+
+		location.lat = obj.loc.latitude;
+		location.lng = obj.loc.longitude;
+		location.eventname = obj.loc.name;
+		location.instagram = instalinks;
+		location.instagramCount = instagramCount;
+		location.instagramScore = instagramScore;
+		if (obj.foursquare) {
+			if (obj.foursquare.location) {
+				location.address = obj.foursquare.location.formattedAddress[0];
+			}
+			if (obj.foursquare.contact) {
+				location.phone = obj.foursquare.contact.formattedPhone;
+			}
+			if (obj.foursquare.stats) {
+				location.visitors = obj.foursquare.stats.checkinsCount;
+			}
+		}
+		location.placename = obj.foursquare.name;
+		return location;
+	}
+
+	/**
+	 * name: getFoursquareInformation
+	 * parameters:
+	 * 		@name: String
+	 * 		@latitude: Float
+	 *		@longitude: Float
+	 * 		@callback: Function
+	 * return: none
+	 * description: Retrieves Foursquare's data for a specific place based on the name/latitute/longitude
+	 */
+	function getFoursquareInformation(name, latitude, longitude, callback)
+	{
+		var url = process.env.fs_fqdn + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ process.env.fs_client_id +'&client_secret=' + process.env.fs_client_secret + '&v=20140806';
+		request(url, function(error, response, body)
+		{
+			if (error) {
+				callback(error, null);
+			}
+			var fs = JSON.parse(body);
+			var v = fs.response['venues'];
+			if (v.length > 0) {
+				callback(null, v[0])
+			} else {
+				callback(null, {});
+			}
+		});
+	}
+
+	/**
+	 * name: calulateTop
+	 * parameters:
+	 * 		@container: Contains all Instagram/Twitter data
+	 * 		@callback: Function
+	 * return: none
+	 * description: Calculates the top number of locations
+	 */
+	function calculateTop(container, callback)
+	{
+		const numberOfResults = 10;
+		var hashTable = {};
+		var topUUIDs = [];
+		var topLocations = [];
+
+		/**
+		 * Calculate scores
+		 */
+		for (var testCaseIndex in container) {
+			var score = 0;
+			var testCase = container[testCaseIndex];
+			var UUID = testCase.uuid;
+			score += (testCase.tweets.length) * 1; // Tweets count as 1 factor
+			score += (testCase.instagram.length) * 2; // Instagrams count as 2 factors
+
+			hashTable[UUID] = score;
+		}
+
+		for(var i = 0 ; i < numberOfResults ; i++)
+		{
+			var largestScore = -1;
+			var largestKey = "";
+			for (var uuid in hashTable)
+			{
+				var score = hashTable[uuid];
+				if (score > largestScore && !topUUIDs[uuid]) {
+					largestScore = hashTable[uuid];
+					largestKey = uuid;
+				}
+			}
+			topUUIDs[largestKey] = largestScore;
+			delete hashTable.largestKey;
+		}
+
+		for (var UUID in topUUIDs)
+		{
+			for (var obj in container)
+			{
+				if (container[obj].uuid == UUID) {
+					console.log("match");
+					topLocations.push(container[obj]);
+				}
+			}
+		}
+		callback(topLocations);
+	}
+
 	async.parallel({
 		instagramLocations: function(callback)
 		{
@@ -205,34 +333,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			res.send({'error': true, 'message': error})
 		} else {
 			var masterObject = [];
-			
-			/**
-			 * name: getFoursquareInformation
-			 * parameters:
-			 * 		@name: String
-			 * 		@latitude: Float
-			 *		@longitude: Float
-			 * 		@callback: Function
-			 * return: none
-			 * description: Retrieves Foursquare's data for a specific place based on the name/latitute/longitude
-			 */
-			function getFoursquareInformation(name, latitude, longitude, callback)
-			{
-				var url = process.env.fs_fqdn + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ process.env.fs_client_id +'&client_secret=' + process.env.fs_client_secret + '&v=20140806';
-				request(url, function(error, response, body)
-				{
-					if (error) {
-						callback(error, null);
-					}
-					var fs = JSON.parse(body);
-					var v = fs.response['venues'];
-					if (v.length > 0) {
-						callback(null, v[0])
-					} else {
-						callback(null, {});
-					}
-				});
-			}
+
 			/**
 			 * Iterate through the instagramLocations object and create a new object by the key
 			 */
@@ -289,10 +390,11 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						 * Load Foursquare data
 						 * Note: EXTREMELY INEFFICIENT AND SLOW --- APPLICATION BOTTLENECK
 						 */
-						getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
-						{
-							callback(null, results);
-						});
+						// getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
+						// {
+						// 	callback(null, results);
+						// });
+						callback(null, null);
 					},
 					twitter: function(callback)
 					{
@@ -337,7 +439,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					 */
 					popular.tweets = results['twitter'];
 					popular.foursquare = results['foursquare'];
-					
+
 					/**
 					 * Push now-filled object into master array
 					 */
@@ -347,10 +449,14 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				});
 			}, function(notAborted, array)
 			{
-				/**
-				 * Send master JSON array
-				 */
-				res.json(masterObject);
+				calculateTop(masterObject, function(topUUIDs)
+				{
+					console.log(topUUIDs)
+					/**
+					 * Send master JSON array
+					 */
+					res.json(masterObject);
+				});
 			});
 		}
 	});
