@@ -29,10 +29,13 @@ node_modules
 # OS X database file
 .DS_Store
 
-# Config file
+# Config files
 config.json
+.env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+
