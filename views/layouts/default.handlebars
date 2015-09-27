@@ -150,7 +150,7 @@
 					mycallback(request.responseText); // Another callback here
 				}
 			}; 
-			request.open('GET', 'http://vespucci.me/api/search/' + sourceLat + "/" + sourceLng);
+			request.open('GET', '/api/search/' + sourceLat + "/" + sourceLng);
 			request.send();
 		}
 
