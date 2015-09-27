@@ -46,10 +46,10 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 // uncomment when deploying to production for view caching
-// app.enable('view cache');
+ app.enable('view cache');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 // app.use(logger(process.env.NODE_ENV));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
