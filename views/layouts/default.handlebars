@@ -13,167 +13,344 @@
 </head>
 <body>
 		{{{ body }}}
-		<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-		<script type="text/javascript">
-		var globaljson;
-		/*
-		* latitude, longitude, sentiment, size. Creates a dot on the map
-		*/
-		function addCircle(alat, along, sent, size) {
-			var fillColor = '#FF0000';
-			if(sent > .6) {
-					fillColor = '#008000';
-			} else if (sent > -.7) {
-					fillColor = '#FFFF00';
-			}
-			var cityCircle = new google.maps.Circle({
-				strokeColor: fillColor,
-				strokeOpacity: 0.8,
-				strokeWeight: 0,
-				fillColor: fillColor,
-				fillOpacity: 0.35,
-				map: map,
-				center: {lat: alat, lng: along},
-				radius: size * 1000
-			});
-			return cityCircle;
-		}
+		<script defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false">
+    	</script>
+			<script>
 
-		// * creates a map at a specified latitude and longitude
-		function instantiateMap(alat, along) {
-			var myLatLng = {lat: alat, lng: along};
-			var map = new google.maps.Map(document.getElementById('map'), {
-				zoom: 13,
-				center: myLatLng
-			});
-			return map;
-		}
+				var autocomplete, map;
 
-		function makeLocation(json, obj){
-			var instalinks = [];
-			var contentCount = 0;
-			for(var insta in json[obj].instagram) {
-				instalinks.push(json[obj].instagram[insta].link);
-				count += 2;
-			}
-			var location = {};
-			location.lat = json[obj].loc.latitude;
-			location.lng = json[obj].loc.longitude;
-			location.eventname = json[obj].loc.name;
-			location.instagram = instalinks;
-			location.count = contentCount;
-			location.address = json[obj].foursquare.location.formattedAddress[0];
-			if (json[obj].foursquare.contact.formattedPhone) {
-				location.phone = json[obj].foursquare.contact.formattedPhone;
-			}
-			if(json[obj].stats.checkinsCount){
-				location.visitors = json[obj].foursquare.stats.checkinsCount;
-			}
-			location.placename = json[obj].foursquare.name;
-			return location;
-		}
-		/*
-		* latitude, longitude, sentiment, size. Creates a dot on the map
-		*/
-		function addMarker(currentLatLng, map, title) {
-			var marker = new google.maps.Marker({
-				position: currentLatLng,
-				map: map,
-				title: 'Hello World!'
-			});
-			return marker;
-		}
+				function initMap() {
+					var maxNumberLocations = 10;
+				  var startPoint = {
+				    lat: 33.783315,
+				    lng: -84.385
+				  };				    
+				  var map = instantiateMap(startPoint.lat, startPoint.lng);
 
-		function initMap() {
-			var maxNumberLocations = 10;
+				  var update = startPoint.lng;
+				  var timerDelay = 1000;
 
-			var officialLat = 33.7550;
-			var officialLong = -84.3900;
-			var currentLatLng = {lat: officialLat, lng: officialLong};
-			var map = instantiateMap(officialLat, officialLong);
+				  panningEffect();
 
-			var marker = new google.maps.Marker({
-				position: currentLatLng,
-				map: map,
-				title: 'Hello World!'
-			});
+				  function panningEffect(){
+					  if (!false){
+					  	update += 0.05;
+					  	startPoint = {
+						    lat: 33.783315,
+						    lng: update
+						  };
+						  map.panTo(startPoint);
+					  	setTimeout(panningEffect, timerDelay);
+					  	console.log(timerDelay);
+						  timerDelay += 1000;
+					  } else {
+					    // ... CODE GOES IN HERE ...
+					  }
+					}
+				  
 
-			var marker = addMarker(currentLatLng, map, 'Hello Wold!');
+					var contentString = '<div id="content">'+
+				      '<div id="siteNotice">'+
+				      '</div>'+
+				      '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+				      '<div id="bodyContent">'+
+				      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+				      'sandstone rock formation in the southern part of the '+
+				      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+				      'south west of the nearest large town, Alice Springs; 450&#160;km '+
+				      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+				      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+				      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+				      'Aboriginal people of the area. It has many springs, waterholes, '+
+				      'rock caves and ancient paintings. Uluru is listed as a World '+
+				      'Heritage Site.</p>'+
+				      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+				      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+				      '(last visited June 22, 2009).</p>'+
+				      '</div>'+
+				      '</div>';
 
-			//calls gets all data from api
-			gettext = function(url, callback) // How can I use this callback?
-			{
-				var request = new XMLHttpRequest();
-				request.onreadystatechange = function()
-				{
-					if (request.readyState == 4 && request.status == 200)
+				  var infowindow = new google.maps.InfoWindow({
+				    content: contentString,
+				    maxWidth: 400
+				  });
+
+				  var marker = new google.maps.Marker({
+				    position: startPoint,
+				    map: map,
+				    title: 'Uluru (Ayers Rock)'
+				  });
+				  marker.addListener('click', function() {
+				    infowindow.open(map, marker);
+				  });
+				  
+				//calls gets all data from api
+					gettext = function(url, callback) // How can I use this callback?
 					{
-						mycallback(request.responseText); // Another callback here
+				    var request = new XMLHttpRequest();
+				    request.onreadystatechange = function()
+				    {
+				        if (request.readyState == 4 && request.status == 200)
+				        {
+				            mycallback(request.responseText); // Another callback here
+				        }
+				    }; 
+				    request.open('GET', 'https://277b7b9e.ngrok.com/api/search/' + startPoint.lat + "/" + startPoint.lng);
+				    request.send();
 					}
-				}; 
-				request.open('GET', 'http://vespucci.me/api/search/' + officialLat + "/" + officialLong);
-				request.send();
-			}
-			//populate the map
-			function mycallback(data) {
-			  	alert(data);
-				//object that essentially acts as a hashmap
-				var uuidToCount = {};
-				var counter = 0;
-				var json = JSON.parse(data);
-				globaljson = json;
-				for(var entryIndex in json) {
-					counter = 0;
-					var uuid = json[entryIndex].uuid;
-					for(var twitterEntryIndex in json[entryIndex].tweets) {
-						counter = counter + 1;
-					}
-					for(var instagramEntryIndex in json[entryIndex].instagram) {
-						counter = counter + 2;
-					}
-					console.log(uuid + ': ' + counter);
-					uuidToCount[uuid] = counter;
-				}
-				var desiredUUIDs = [];
-				for(var i = 0 ; i < maxNumberLocations ; i++) {
-					var largestValue = -1;
-					var largestKey = "";
-					console.log('swag');
-					for(var key in uuidToCount) {
-							if(uuidToCount[key] > largestValue && desiredUUIDs.indexOf(key) == -1) {
-								largestValue = uuidToCount[key];
-								largestKey = key;
-							}
-					}
-					desiredUUIDs.push(largestKey);
-					delete uuidToCount.largestKey;
-				}
-				
-				/**
-					vvvvv TEJAS THIS IS THE LIST  vvvvvv
-				**/
-				locations = [];
-				
-				//populating the list, calls makeLocation which builds the location object
-				for(var i = 0; i < desiredUUIDs.length; i++) {
-					for(var obj in json){
-						if (json[obj].uuid === desiredUUIDs[i]) {
-							locations.push(makeLocation(json, obj));
+
+					//populate the map
+					function mycallback(data) {
+			
+				    //object that essentially acts as a hashmap
+				    
+				   	var uuidToCount = {};
+				   	
+				   	var counter = 0;
+				   	var json = JSON.parse(data);
+				   	
+				   	for(var entryIndex in json) {
+				   		counter = 0;
+				   		var uuid = json[entryIndex].uuid;
+
+				   		for(var twitterEntryIndex in json[entryIndex].tweets) {
+				   			counter = counter + 1;
+				   		}
+				   		for(var instagramEntryIndex in json[entryIndex].instagram) {
+				   			counter = counter + 2;
+				   		}
+				   		console.log(uuid + ': ' + counter);
+				   		uuidToCount[uuid] = counter;
+				   	}
+
+						var desiredUUIDs = [];
+						
+						for(var i = 0 ; i < maxNumberLocations ; i++) {
+							var largestValue = -1;
+					  		var largestKey = "";
+					  		console.log('swag');
+					    	for(var key in uuidToCount) {
+					  			if(uuidToCount[key] > largestValue && desiredUUIDs.indexOf(key) == -1) {
+					  		  		largestValue = uuidToCount[key];
+					  		  		largestKey = key;
+					  	  		}
+					    	}
+					    	desiredUUIDs.push(largestKey);
+					    	delete uuidToCount.largestKey;
+					  	}
+		/*
+						var visitedUUIDs = [];
+						//based on desired UUIDs, GET relevant information and make circles and shit on the javascript!
+						for(int i = 0 ; i < widthAPIcalls ; i++) {
+					  		for(int j = 0; j < heightAPIcalls ; j++) {
+					  			var currentLat = startingLat + 0.0090198901*i;
+					  			var currentLong = startingLong + 0.0090198901*j;
+
+					  			//make API call to that value and store as a 
+					  			//continue checking until UUID. 
+					  			//assuming I make the json like: var data = OUTPUT JSON SHIT!!!! and the first words is swiggityswooty
+					  			var counter = 0;
+					  			for(var i in data.objects) {
+					  				counter = 0;
+					  				var uuid = data.objects[i].UUID;
+					  				if(desiredUUIDs.indexOf(uuid) != -1 && visitedUUIDs.indexOf(uuid) == -1) {
+					  				//if found, feel free to save pictures sand formulate the dot!! Incompelete!!
+					  				for(var j in data.objects[i].Instagram) {
+					  					//STORE THE INSTAGRAM PHOTOS!!!!!!!!!!!!!!!!
+					  				}
+					  				for(var j in data.objects[i].Twitter) {
+					  					//STORE AND USE THE TWITTER PHOTOS!!!!!!!!!!!!!!!!!!!!!!!
+					  				}
+					  				addCircle(data.objects[i].Loc.lat, data.objects[i].Loc.lng, .1, 2.5)
+					  					visitedUUIDs.push(uuid);
+					  				} 
+					  			}
+					  		}
 						}
-					}
+					*/
 				}
-				
-			}
-			gettext(null, mycallback); 
-		}
+				gettext(null, mycallback); 
 
+				}
+
+				window.onload = function() {
+					initMap();
+				}
+					
+
+				function initAutocomplete() {
+				  // Create the autocomplete object
+
+				  autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
+			  		types: ['geocode']
+			  	});
+
+				  // When the user selects an address from the dropdown, populate the address, sends the lat long
+				  autocomplete.addListener('place_changed', function() {
+				  	var place = autocomplete.getPlace().geometry.location;
+				  	var lat = place.H;
+				  	var lng = place.L;
+
+				  	var currentLatLng = {
+					    lat: lat,
+					    lng: lng
+					  };
+
+				    map.panTo(currentLatLng);
+				    var marker = new google.maps.Marker({
+						  position: currentLatLng,
+						  map: map,
+						  title: 'Hello World!'
+						});
+						var marker = addMarker(currentLatLng, map, 'Hello World!');
+
+				  	console.log("Success through autocomplete!")
+				  	console.log("latitude: " + lat);
+				    console.log("longitude: " +  lng);
+				    // GET request /API/SEARCH/{LAT}/{LNG}/
+				    	// Sets to main page with coordinates as the starting center of the circle
+				    	// No pin
+				    animateTransition();
+				  });
+				}
+
+				// Button is clicked, sends lat and long based on your current location
+				function geolocate() {
+				  if (navigator.geolocation) {
+				    navigator.geolocation.getCurrentPosition(function(position) {
+				      var lat = position.coords.latitude;
+				      var lng = position.coords.longitude;
+
+				      var currentLatLng = {
+						    lat: lat,
+						    lng: lng
+						  };
+				      map.panTo(currentLatLng);
+				      var marker = new google.maps.Marker({
+							  position: currentLatLng,
+							  map: map,
+							  title: 'Hello World!'
+							});
+							var marker = addMarker(currentLatLng, map, 'Hello World!');
+
+				      console.log("Success through geolocation!");
+				      console.log("latitude: " + lat);
+				      console.log("longitude: " +  lng);
+				      // GET request /API/SEARCH/{LAT}/{LNG}/
+				    		// Sets to main page with coordinates as the starting center of the circle
+				    		// Set pin to the center of the page
+				    	animateTransition();
+				    });
+				  }
+				}
+
+				// Transition from front to main
+				function animateTransition() {
+		    	$("#mainlogo").fadeOut('slow', function() {
+		    		$("#searchBar").animate({
+		    			"top": "-100px",
+		    			"left": "50px"
+		    		}, 'slow');
+		    		$("#smalllogo").fadeIn('slow');
+		    		$("#headerbackground").css({
+		    			"backgroundColor": "#AA4652"
+		    		});
+		    		$("#headercontent").css({
+		    			"width": "90%"
+		    		});
+		    		$("#blur").css({
+		    			"display": "none"
+		    		})
+		    	});
+				}
+
+
+				/*
+	    	* latitude, longitude, sentiment, size. Creates a dot on the map
+	    	*/
+				function addCircle(alat, along, sent, size) {
+					var fillColor = '#FF0000';
+					if(sent > .6) {
+						fillColor = '#008000';
+					} else if (sent > -.7) {
+						fillColor = '#FFFF00';
+					}
+					var cityCircle = new google.maps.Circle({
+				      strokeColor: fillColor,
+				      strokeOpacity: 0.8,
+				      strokeWeight: 0,
+				      fillColor: fillColor,
+				      fillOpacity: 0.35,
+				      map: map,
+				      center: {lat: alat, lng: along},
+				      radius: size * 1000
+				    });
+				    return cityCircle;
+				}
+				/*
+				* creates a map at a specified latitude and longitude
+				*/
+				function instantiateMap(alat, along) {
+				  var myLatLng = {lat: alat, lng: along};
+
+
+				  var styleArray = [
+				    {
+				      featureType: "all",
+				      stylers: [
+				       { saturation: -100 }
+				      ]
+				    },{
+				      featureType: "road.arterial",
+				      elementType: "geometry",
+				      stylers: [
+				        { hue: "#00ffee" },
+				        { saturation: 50 }
+				      ]
+				    },{
+				      featureType: "poi.business",
+				      elementType: "labels",
+				      stylers: [
+				        { visibility: "off" }
+				      ]
+				    }
+				  ];
+				  var mapOptions = {
+				  	disableDefaultUI: true,
+				  	disableDoubleClickZoom: true,
+				  	scrollwheel: false,
+    				navigationControl: false,
+    				mapTypeControl: false,
+    				scaleControl: false,
+    				draggable: false,
+				    mapTypeId: google.maps.MapTypeId.ROADMAP,
+				    center: myLatLng,
+				    zoom: 15,
+				    styles: styleArray
+				  };
+				  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+				  return map;
+				}
+		    	/*
+		    	* latitude, longitude, sentiment, size. Creates a dot on the map
+		    	*/
+				function addMarker(currentLatLng, map, title) {
+				  var marker = new google.maps.Marker({
+				    position: currentLatLng,
+				    map: map,
+				    title: 'Hello World!'
+				  });
+				  return marker;
+				}
 		</script>
-
-		<script async defer
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfUVwIfC6Q_suaMQrN_qXtdCyw4oXaqAk&callback=initMap">
-		</script>
-
-
+		
+		<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+		
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>	
+		
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtBRLsMk9pVw7q7nCAjazKRTzf5J5fi9A&signed_in=false&libraries=places&callback=initAutocomplete"
+        async defer></script>
 </body>
 </html>
