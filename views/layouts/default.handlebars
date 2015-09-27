@@ -199,9 +199,6 @@
 			});
 
 			$(document).ready(function(){ infowindow.open(map,cityCircle); });
-
-			//create window at lat: locations[locationIndex].lat, lng:locations[locationIndex].lng
-
 		}
 
 		window.onload = function() {
@@ -278,23 +275,35 @@
 
 		// Transition from front to main
 		function animateTransition() {
-			$("#mainlogo").fadeOut('slow', function() {
-				$("#searchBar").css({
-					"top": "-100px",
-					"left": "50px"
-				});
-				$("#smalllogo").fadeIn('slow');
-				$("#headerbackground").css({
-					"backgroundColor": "#AA4652"
-				});
-				$("#headercontent").css({
-					"width": "90%"
-				});
-				$("#blur").css({
-					"display": "none"
-				})
-			});
+    	$("#options").fadeOut('slow', function() {
+    		$("#mainlogo").fadeOut('slow', function() {
+    			$("#searchBar").css({
+	    			"top": "-100px",
+	    			"left": "50px"
+	    		});
+	    		$("#searchBar").fadeIn('slow');
+	    		$("#headerbackground").css({
+	    			"backgroundColor": "#AA4652"
+	    		});
+	    		$("#headercontent").css({
+	    			"width": "90%"
+	    		});
+	    		$("#smalllogo").fadeIn('slow');
+    		
+	    		$("#blur").css({
+	    			"display": "none"
+	    		})
+
+					$("#back").css("display","none");
+    		});
+    	});
 		}
+
+		$("#searchbutton").click(function() {
+			$("#options").fadeOut(function(){
+				$("#searchBar").fadeIn('slow');
+			});
+		});
 
 		/*
 		 * creates a map at a specified latitude and longitude

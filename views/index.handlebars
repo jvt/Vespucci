@@ -5,12 +5,25 @@
 		<h1 id="smalllogo">Vespucci</h1>
 		<div class="container" id="headercontent">
 		  <h1 id="mainlogo">Vespucci</h1>
-		  <div class="input-group" id="searchBar">
-		    <input class = "form-control" type"text" placeholder="Discover the Uncharted..." id="autocomplete">
-		    <span class="input-group-btn">
-		      <button class="btn btn-default" id="locationbutton" type="button" onclick="geolocate()"><span class="glyphicon glyphicon-screenshot"></span></button>
-		    </span>
+
+			<form id="searchBar">
+			  <div class="form-group">
+			    <input type="text" class="form-control" placeholder="Discover the Uncharted..." id="autocomplete">
+			  </div>
+			  <a href=""><p id="back">back</p></a>
+			</form>
+
+		  <div class="break"></div>
+
+		  <div id ="options">
+		  	<div id = "optionSearch">
+		  		<button class="btn btn-success toggleOptions" id="searchbutton"><span class="glyphicon glyphicon-search"></span>&nbsp;&nbsp;Search</button>
+		  	</div>
+		  	<div id = "optionLocate">
+		  		<button class="btn btn-danger toggleOptions" id="locationbutton" onclick="geolocate()"><span class="glyphicon glyphicon-pushpin"></span>&nbsp;&nbsp;Locate</button>
+		  	</div>
 		  </div>
+		  
 		</div>
 	</div>
 <div>

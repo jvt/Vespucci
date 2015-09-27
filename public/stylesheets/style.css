@@ -6,6 +6,9 @@ body {
 a {
   color: #00B7FF;
 }
+a:hover {
+	text-decoration: none;
+}
 @font-face {
 	font-family: Gidole-Regular;
 	src: url(/fonts/Gidole-Regular.ttf);
@@ -73,7 +76,7 @@ pre {
   background-color: grey;
   position: fixed;
   z-index: 0;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 @media (max-width: 500px) {
 	#mainlogo {
@@ -89,29 +92,31 @@ pre {
 #searchBar {
 	position: relative;
 	top: 60px;
+	width: 900px;
 	padding: 0;
 	margin: 0; 
 	z-index: 1;
+	display: none;
+	float: right;
 }
 a:hover {
 	color: white;
 }
-
 a[href^="http://maps.google.com/maps"]{display:none !important}
 a[href^="https://maps.google.com/maps"]{display:none !important}
 
 .gmnoprint a, .gmnoprint span, .gm-style-cc {
-    display:none;
+  display:none;
 }
 .gmnoprint div {
-    background:none !important;
+  background:none !important;
 }
 #mainlogo {
 	color: white;
-	text-shadow: 2px 3px grey;
+	text-shadow: 1px 1px grey;
 }
 #smalllogo {
-	padding: 0;
+	padding: 0 0 0 20px;
 	margin: 0;
 	float: left;
 	display: none;
@@ -120,16 +125,35 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 	top:3px;
 	text-shadow: 1px 1px grey;
 }
-#locationbutton {
-	background-color: #C4515E;
-	color: white;
-	padding-top: 8px; 
-	padding-bottom: 4px;
-}
 #headerbar {
-	padding: 20px 0;
+	padding: 20px 0 10px 0;
 	width: 80%;
 	margin: 0 auto;
 	z-index: 1;
 }
-
+.break {
+	clear:both;
+}
+#options {
+	position: relative;
+	top: 100px;
+}
+.toggleOptions {
+	height: 80px;
+	width: 300px;
+	font-size: 2em;
+}
+#optionSearch {
+	float: left;
+	margin-left: 70px;
+}
+#optionLocate {
+	float: right;
+	margin-right: 70px;
+}
+#back {
+	font-weight: bold;
+	color: white;
+	font-size: 1.3em;
+	text-shadow: 1px 1px grey;
+}
