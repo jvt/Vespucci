@@ -6,8 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+@font-face {
+	font-family: Gidole-Regular;
+	src: url(/fonts/Gidole-Regular.ttf);
+}
 h1 {
-	font-family: Raleway;
+	font-family: Gidole-Regular;
 	font-size: 90px;
 	font-style: normal;
 	font-variant: normal;
@@ -104,7 +108,7 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 }
 #mainlogo {
 	color: white;
-	text-shadow: 2px 2px grey;
+	text-shadow: 2px 3px grey;
 }
 #smalllogo {
 	padding: 0;
