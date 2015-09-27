@@ -62,10 +62,11 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	{
 		var url;
 		if (MAX_TIMESTAMP) {
-			url = config.get('instagram').FQDN + '?distance=5000&max_timestamp='+MAX_TIMESTAMP+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+			url = process.env.ig_fqdn + '?distance=5000&max_timestamp=' + MAX_TIMESTAMP + '&access_token=' + process.env.ig_access_token + '&lat=' + latitude + '&lng=' + longitude;
 		} else {
-			url = config.get('instagram').FQDN + '?distance=5000&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+			url = process.env.ig_fqdn + '?distance=5000&access_token=' + process.env.ig_access_token + '&lat=' + latitude + '&lng=' + longitude;
 		}
+
 		request(url, function(error, response, body)
 		{
 			if (error) {
@@ -86,7 +87,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			var start = new Date();
 			start.setHours(start.getHours-4);
 			start = start / 1000;
-			var url = config.get('instagram').FQDN + '?distance=5000&MIN_TIMESTAMP='+start+'&access_token=' + config.get('instagram').access_token + '&lat=' + latitude + '&lng=' + longitude;
+			var url = process.env.ig_fqdn+ '?distance=5000&MIN_TIMESTAMP='+start+'&access_token=' + process.env.ig_access_token + '&lat=' + latitude + '&lng=' + longitude;
 			var rawUnsorted = [];
 			var iterations = 5;
 			function instagramify(MAX_TIMESTAMP, callback)
@@ -134,23 +135,23 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 		{
 			var query_search_term = "";
 			var parameters = {
-				'oauth_consumer_key': config.get('twitter').consumer_key,
+				'oauth_consumer_key': process.env.twitter_consumer_key,
 				'oauth_nonce': randomstring.generate({charset: 'alphabetic'}),
 				'oauth_signature_method': 'HMAC-SHA1',
 				'oauth_timestamp': Math.floor(new Date() / 1000),
-				'oauth_token': config.get('twitter').oauth_token,
+				'oauth_token': process.env.twitter_oauth_token,
 				'oauth_version': '1.0',
 				'q': query_search_term,
 				'geocode': '"'+latitude+','+longitude+',2mi"',
 				'count': 100
 			};
 			var signature = authSignature.generate('GET',
-													config.get('twitter').FQDN + "search/tweets.json",
+													process.env.twitter_fqdn + "search/tweets.json",
 													parameters,
-													config.get('twitter').consumer_secret,
-													config.get('twitter').oauth_token_secret);
+													process.env.twitter_consumer_secret,
+													process.env.twitter_oauth_token_secret);
 			var options = {
-				url: config.get('twitter').FQDN + 'search/tweets.json?q='+query_search_term+'&geocode="'+latitude+','+longitude+',2mi"&count=100',
+				url: process.env.twitter_fqdn + 'search/tweets.json?q='+query_search_term+'&geocode="'+latitude+','+longitude+',2mi"&count=100',
 				headers: {
 					'Authorization': 'OAuth oauth_consumer_key="'+parameters['oauth_consumer_key']+'", oauth_nonce="'+parameters['oauth_nonce']+'", oauth_signature="'+signature+'", oauth_signature_method="'+parameters['oauth_signature_method']+'", oauth_timestamp="'+parameters['oauth_timestamp']+'", oauth_token="'+parameters['oauth_token']+'", oauth_version="'+parameters['oauth_version']+'"'
 				}
@@ -173,176 +174,125 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			res.send({'error': true, 'message': error})
 		} else {
 			var masterObject = [];
-
-			// Get Sentiment First
-			forEach(results['twitter']['statuses'], function(tweet, tweetIndex, array)
+			
+			function getFoursquareInformation(name, latitude, longitude, callback)
 			{
-				// Calculate sentiment
-				// var sentimentURL = config.get('alchemy').Endpoint + "?outputMode=json&apikey=" + config.get('alchemy').API_KEY + "&text=" + results['twitter']['statuses'][tweetIndex].text;
-				// request(sentimentURL, function(err, response, body)
-				// {
-				// 	if (err) {
-				// 		console.log(err);
-				// 	}
-
-				// 	if (body && response.statusCode == 200) {
-				// 		var doc = JSON.parse(body);
-				// 		if (doc.status == "OK") {
-				// 			var docSentiment = doc.docSentiment;
-				// 			var sentiment = 0;
-				// 			if (docSentiment.score) {
-				// 				sentiment = docSentiment.score;
-				// 			}
-				// 			results['twitter']['statuses'][tweetIndex].sentiment = sentiment;
-				// 		} else {
-				// 			if (results['twitter']['statuses'][tweetIndex] != undefined) {
-				// 				results['twitter']['statuses'][tweetIndex].sentiment = null;
-				// 			}
-				// 		}
-				// 	} else {
-				// 		if (results['twitter']['statuses'][tweetIndex] != undefined) {
-				// 			results['twitter']['statuses'][tweetIndex].sentiment = null;
-				// 		}
-				// 	}
-				// });
-			}, function(notAborted, array)
-			{
-				function getFoursquareInformation(name, latitude, longitude, callback)
+				var url = process.env.fs_fqdn + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ process.env.fs_client_id +'&client_secret=' + process.env.fs_client_secret + '&v=20140806';
+				request(url, function(error, response, body)
 				{
-					var url = config.get('foursquare').FQDN + 'venues/search?query='+ name +'&ll=' + latitude + ',' + longitude + '&intent=match&client_id='+ config.get('foursquare').client_id +'&client_secret=' + config.get('foursquare').client_secret + '&v=20140806';
-					request(url, function(error, response, body)
-					{
-						if (error) {
-							callback(error, null);
-						}
-						var fs = JSON.parse(body);
-						var v = fs.response['venues'];
-						if (v.length > 0) {
-							callback(null, v[0])
-						} else {
-							callback(null, {});
-						}
-					});
+					if (error) {
+						callback(error, null);
+					}
+					var fs = JSON.parse(body);
+					var v = fs.response['venues'];
+					if (v.length > 0) {
+						callback(null, v[0])
+					} else {
+						callback(null, {});
+					}
+				});
+			}
+			forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
+			{
+				var i = Object.keys(results['instagramLocations'])[index]
+
+				var ig = results['instagramLocations'][i.toString()];
+				var location = ig[0].location;
+				
+				// Create new popular location Object
+				var popular = {};
+				popular.uuid = md5(location.latitude + "," + location.longitude);
+				popular.name = location.name;
+				popular.instagram = [];
+				popular.tweets = [];
+				popular.foursquare = {};
+				popular.location = {};
+
+				// Basic spam checker (removes any object with name that contains .com/.net/.org)
+				if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
+					return;
 				}
-				forEach(_.range(Object.keys(results['instagramLocations']).length), function(object, index)
+
+				// Populate popular location Object with instagram photos
+				for (photoIndex in ig)
 				{
-					var i = Object.keys(results['instagramLocations'])[index]
+					var photo = ig[photoIndex];
 
-					var ig = results['instagramLocations'][i.toString()];
-					var location = ig[0].location;
-					
-					// Create new popular location Object
-					var popular = {};
-					popular.uuid = md5(location.latitude + "," + location.longitude);
-					popular.name = location.name;
-					popular.instagram = [];
-					popular.tweets = [];
-					popular.foursquare = {};
-					popular.location = {};
-
-					// Basic spam checker (removes any object with name that contains .com/.net/.org)
-					if (popular.name.indexOf('.com') > -1 || popular.name.indexOf('.net') > -1 || popular.name.indexOf('.org') > -1) {
+					if (!photo.location || photo.type != 'image') {
 						return;
 					}
 
-					// Populate popular location Object with instagram photos
-					for (photoIndex in ig)
+					popular.loc = photo.location;
+
+					var photoData = {};
+					photoData.loc = photo.location;
+					photoData.created_time = photo.created_time;
+					photoData.link = photo.link;
+					photoData.fullResImageData = photo.images.standard_resolution;
+					photoData.caption = photo.caption;
+
+					popular.instagram.push(photoData);
+				}
+
+
+				var done = this.async();
+				async.parallel({
+					foursquare: function(callback)
 					{
-						var photo = ig[photoIndex];
-
-						if (!photo.location || photo.type != 'image') {
-							return;
-						}
-
-						popular.loc = photo.location;
-
-						var photoData = {};
-						photoData.loc = photo.location;
-						photoData.created_time = photo.created_time;
-						photoData.link = photo.link;
-						photoData.fullResImageData = photo.images.standard_resolution;
-						photoData.caption = photo.caption;
-
-						popular.instagram.push(photoData);
-					}
-
-
-					var done = this.async();
-					async.parallel({
-						foursquare: function(callback)
+						getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
 						{
-							getFoursquareInformation(location.name, location.latitude, location.longitude, function(error, results)
-							{
-								callback(null, results);
-							});
-						},
-						twitter: function(callback)
+							callback(null, results);
+						});
+					},
+					twitter: function(callback)
+					{
+						var locationTweets = [];
+						forEach(results['twitter']['statuses'], function (item, tweetIndex, array)
 						{
-							var locationTweets = [];
-							forEach(results['twitter']['statuses'], function (item, tweetIndex, array)
-							{
-								var tweet = results['twitter']['statuses'][tweetIndex];
-								if (tweet) {
-									// Remove from tweet object -- It's of little value to us
-									if (tweet.geo == null) {
-										results['twitter']['statuses'].splice(tweetIndex, 1);
-									} else {
-										// Compare lat/long
-										var photoLat  = popular.loc.latitude;
-										var photoLong = popular.loc.longitude;
-										var tweetLat  = tweet.geo.coordinates[0];
-										var tweetLong = tweet.geo.coordinates[1];
+							var tweet = results['twitter']['statuses'][tweetIndex];
+							if (tweet) {
+								// Remove from tweet object -- It's of little value to us
+								if (tweet.geo == null) {
+									results['twitter']['statuses'].splice(tweetIndex, 1);
+								} else {
+									// Compare lat/long
+									var photoLat  = popular.loc.latitude;
+									var photoLong = popular.loc.longitude;
+									var tweetLat  = tweet.geo.coordinates[0];
+									var tweetLong = tweet.geo.coordinates[1];
 
-										if ((tweetLat > photoLat - .001 && tweetLat < photoLat + .001) && (tweetLong > photoLong - .001 && tweetLong < photoLong + .001)) {
-											var tweetData = {};
-											tweetData.text = tweet.text;
-											tweetData.id = tweet.id;
-											tweetData.created_at = tweet.created_at;
-											tweetData.geo = tweet.geo;
+									if ((tweetLat > photoLat - .001 && tweetLat < photoLat + .001) && (tweetLong > photoLong - .001 && tweetLong < photoLong + .001)) {
+										var tweetData = {};
+										tweetData.text = tweet.text;
+										tweetData.id = tweet.id;
+										tweetData.created_at = tweet.created_at;
+										tweetData.geo = tweet.geo;
 
-											// Remove from tweet array now that we know where it belongs
-											results['twitter']['statuses'].slice(tweetIndex, 1);
+										// Remove from tweet array now that we know where it belongs
+										results['twitter']['statuses'].slice(tweetIndex, 1);
 
-											locationTweets.push(tweetData);	
-										}
+										locationTweets.push(tweetData);	
 									}
 								}
-							}, function(notAborted, array)
-							{
-								callback(null, locationTweets);
-							});
-						}
-					}, function(error, results)
-					{
-						popular.tweets = results['twitter'];
-						popular.foursquare = results['foursquare'];
-						masterObject.push(popular);
-						done()
-					});
-				}, function(notAborted, array)
+							}
+						}, function(notAborted, array)
+						{
+							callback(null, locationTweets);
+						});
+					}
+				}, function(error, results)
 				{
-					res.json(masterObject);
+					popular.tweets = results['twitter'];
+					popular.foursquare = results['foursquare'];
+					masterObject.push(popular);
+					done()
 				});
+			}, function(notAborted, array)
+			{
+				res.json(masterObject);
 			});
 		}
 	});
 });
 
-/* GET popular locations given a LATITUDE / LONGITUDE */
-router.get('/event/:LATITUDE/:LONGITUDE/:NAME/', function(req, res, next) {
-
-	var latitude = req.params.LATITUDE;
-	var longitude = req.params.LONGITUDE;
-	var name = req.params.NAME;
-
-	if (!latitude || !longitude || !name) {
-		res.json({ 'error': true, 'message': 'MISSING PARAMETER' });
-	}
-
-	if (isNaN(latitude) || isNaN(longitude)) {
-		res.json({ 'error': true, 'message': 'PARAMETER NaN' });
-	}
-
-	res.json({'data': 'THERE WILL BE SOMETHING HERE EVENTUALLY'});
-});
 module.exports = router;
