@@ -226,7 +226,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			for (var obj in container)
 			{
 				if (container[obj].uuid == UUID) {
-					console.log("match");
 					topLocations.push(container[obj]);
 				}
 			}
@@ -438,7 +437,6 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 					 * Append to popular object
 					 */
 					popular.tweets = results['twitter'];
-					popular.foursquare = results['foursquare'];
 
 					/**
 					 * Push now-filled object into master array
@@ -449,13 +447,20 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 				});
 			}, function(notAborted, array)
 			{
-				calculateTop(masterObject, function(topUUIDs)
+				calculateTop(masterObject, function(topLocations)
 				{
-					console.log(topUUIDs)
-					/**
-					 * Send master JSON array
-					 */
-					res.json(masterObject);
+					forEach(topLocations, function(location, top)
+					{
+						getFoursquareInformation(location.name, location.loc.latitude, location.loc.longitude, function(error, fs)
+						{
+							if (!error) {
+								topLocations.foursquare = fs;
+							}
+						});
+					}, function(notAborted, array)
+					{
+						res.json(masterObject);
+					});
 				});
 			});
 		}
