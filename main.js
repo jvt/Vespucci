@@ -6,15 +6,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var path = require('path');
-
-// Config
-GLOBAL.config = require('nconf').argv().env().file({ file: path.join(__dirname, 'config.json') });
+var assert = require('assert');
+var env = require('node-env-file');
 
 var index = require('./routes/index');
 var api = require('./routes/api');
 
 var app = express();
 var hbs = exphbs.create({ defaultLayout: 'default' });
+
+env(__dirname + '/.env');
 
 app.use(function (req, res, next) {
 
@@ -45,7 +46,7 @@ app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+app.use(logger(process.env.NODE_ENV));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
