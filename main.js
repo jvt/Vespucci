@@ -16,7 +16,7 @@ var hbs = exphbs.create({ defaultLayout: 'default' });
 
 fs.exists(__dirname + '/.env', function(exists)
 {
-	env(__dirname + '/.env');  
+	env(__dirname + '/.env');
 });
 
 
