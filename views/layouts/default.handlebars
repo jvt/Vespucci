@@ -75,21 +75,21 @@
 				  var map = instantiateMap(startPoint.lat, startPoint.lng);
 
 				  var update = startPoint.lng;
-				  var timerDelay = 1000;
+				  var timerDelay = 800;
 				  var eventListen = false;
 
 				  panningEffect();
 
 				  function panningEffect(){
 					  if (!eventListen){
-					  	update += 0.05;
+					  	update += Math.random() * (0.02 - 0.050) + 0.050;
 					  	startPoint = {
-						    lat: 33.783315,
+						    lat: 33.783315 + (Math.random() * (0.02 - 0.050) + 0.050),
 						    lng: update
 						  };
 						  map.panTo(startPoint);
 					  	setTimeout(panningEffect, timerDelay);
-						  timerDelay += 1000;
+						  timerDelay += 800;
 
 						  $("#locationbutton").click(function() {
 						  	eventListen = true;
