@@ -157,27 +157,22 @@
 		//populate the map
 		function mycallback(data) {
 
-			for(locationIndex in data) {
+			for (locationIndex in data) {
 				console.log(data[locationIndex].lat);
 				console.log(data[locationIndex].lng);
-			  //addCircle(data[locationIndex].lat, data[locationIndex].lng, 1, 1000);
+			  	//addCircle(data[locationIndex].lat, data[locationIndex].lng, 1, 1000);
 
-			  var cityCircle = new google.maps.Circle({
-			  	strokeColor: '#FF0000',
-			  	strokeOpacity: 0.8,
-			  	strokeWeight: 2,
-			  	fillColor: '#FF0000',
-			  	fillOpacity: 0.35,
-			  	map: map,
-			  	center: {lat: data[locationIndex].lat, lng:data[locationIndex].lng},
-			  	radius: data[locationIndex].count * 20
-			  });
-			}	
-
-
-
-
-
+			  	var cityCircle = new google.maps.Circle({
+			  		strokeColor: '#FF0000',
+			  		strokeOpacity: 0.8,
+			  		strokeWeight: 2,
+			  		fillColor: '#FF0000',
+			  		fillOpacity: 0.35,
+			  		map: map,
+			  		center: {lat: data[locationIndex].lat, lng:data[locationIndex].lng},
+			  		radius: data[locationIndex].count * 20
+			  	});
+			}
 
 			var uluru = {lat: data[locationIndex].lat, lng: data[locationIndex].lng};
 
@@ -203,7 +198,7 @@
 			'</div>';
 
 			var infowindow = new google.maps.InfoWindow({
-				position: {lat: data[locationIndex].lat, lng: data[locationIndex].lng},
+			  	position: {lat: data[locationIndex].lat, lng: data[locationIndex].lng},
 				content: contentString
 			});
 
@@ -305,99 +300,75 @@
 			});
 		}
 
-
-		/*
-		 * latitude, longitude, sentiment, size. Creates a dot on the map
-		 */
-		 function addCircle(alat, along, sent, size) {
-		 	var fillColor = '#FF0000';
-		 	if(sent > .6) {
-		 		fillColor = '#008000';
-		 	} else if (sent > -.7) {
-		 		fillColor = '#FFFF00';
-		 	}
-		 	var cityCircle = new google.maps.Circle({
-		 		strokeColor: fillColor,
-		 		strokeOpacity: 0.8,
-		 		strokeWeight: 0,
-		 		fillColor: fillColor,
-		 		fillOpacity: 0.35,
-		 		map: map,
-		 		center: {lat: alat, lng: along},
-		 		radius: size * 1000
-		 	});
-		 	return cityCircle;
-		 }
-
 		/*
 		 * creates a map at a specified latitude and longitude
 		 */
-		function instantiateMap(alat, along) {
-			var myLatLng = {lat: alat, lng: along};
+		 function instantiateMap(alat, along) {
+		 	var myLatLng = {lat: alat, lng: along};
 
 
-			var styleArray = [
-			{
-				featureType: "all",
-				stylers: [
-				{ saturation: -100 }
-				]
-			},{
-				featureType: "road.arterial",
-				elementType: "geometry",
-				stylers: [
-				{ hue: "#00ffee" },
-				{ saturation: 50 }
-				]
-			},{
-				featureType: "poi.business",
-				elementType: "labels",
-				stylers: [
-				{ visibility: "off" }
-				]
-			}
-			];
-			var mapOptions = {
-				disableDefaultUI: true,
-				disableDoubleClickZoom: true,
-				scrollwheel: false,
-				navigationControl: false,
-				mapTypeControl: false,
-				scaleControl: false,
-				draggable: false,
-				mapTypeId: google.maps.MapTypeId.ROADMAP,
-				center: myLatLng,
-				zoom: 13,
-				styles: styleArray
-			};
-			map = new google.maps.Map(document.getElementById('map'), mapOptions);
+		 	var styleArray = [
+		 	{
+		 		featureType: "all",
+		 		stylers: [
+		 		{ saturation: -100 }
+		 		]
+		 	},{
+		 		featureType: "road.arterial",
+		 		elementType: "geometry",
+		 		stylers: [
+		 		{ hue: "#00ffee" },
+		 		{ saturation: 50 }
+		 		]
+		 	},{
+		 		featureType: "poi.business",
+		 		elementType: "labels",
+		 		stylers: [
+		 		{ visibility: "off" }
+		 		]
+		 	}
+		 	];
+		 	var mapOptions = {
+		 		disableDefaultUI: true,
+		 		disableDoubleClickZoom: true,
+		 		scrollwheel: false,
+		 		navigationControl: false,
+		 		mapTypeControl: false,
+		 		scaleControl: false,
+		 		draggable: false,
+		 		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		 		center: myLatLng,
+		 		zoom: 13,
+		 		styles: styleArray
+		 	};
+		 	map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-			return map;
-		}
+		 	return map;
+		 }
 
     	/*
     	 * latitude, longitude, sentiment, size. Creates a dot on the map
     	 */
-    	function addMarker(currentLatLng, map, title) {
-    		var marker = new google.maps.Marker({
-    			position: currentLatLng,
-    			map: map,
-    			title: 'Hello World!'
-    		});
-    		return marker;
-    	}
+    	 function addMarker(currentLatLng, map, title) {
+    	 	var marker = new google.maps.Marker({
+    	 		position: currentLatLng,
+    	 		map: map,
+    	 		title: 'Hello World!'
+    	 	});
+    	 	return marker;
+    	 }
 
-    </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script>
-    	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    	</script>
+    	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    	<script>
+    		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    	ga('create', 'UA-54131867-7', 'auto');
-    	ga('send', 'pageview');
+    		ga('create', 'UA-54131867-7', 'auto');
+    		ga('send', 'pageview');
 
-    </script>
-</body>
-</html>
+    	</script>
+    </body>
+    </html>
