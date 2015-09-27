@@ -154,6 +154,7 @@
 			  	*/
 			  	//get all the stuufs  we need
                   //latitude, longitude 
+
                 var latitude = json[locationIndex].lat;
                 var longitude = json[locationIndex].lng;
                 var eventName = json[locationIndex].eventname;
@@ -168,9 +169,25 @@
                 	instaLink = "";
                 }
 
-                var address = json[locationIndex].address;
-                var phone = json[locationIndex].phone;
-                var visitors = json[locationIndex].visitors;
+                var address, phone, visitors;
+
+                if (typeof (json[locationIndex].address) !== 'undefined') {
+                	address = json[locationIndex].address;
+                } else {
+                	address = 'address: N/A';
+                }
+
+                if (typeof (json[locationIndex].phone) !== 'undefined') {
+                	phone = json[locationIndex].phone;
+                } else {
+                	phone = 'phone: N/A';
+                }
+                
+                if (typeof (json[locationIndex].visitors) !== 'undefined') {
+                	visitors = json[locationIndex].visitors;
+                } else {
+                	visitors = 'N/A';
+                }
 
                 var link = encodeURI('https://maps.google.com?saddr=' + sourceLat + ',' + sourceLng + '&daddr=' + latitude + ',' + longitude);
                 console.log(link);
