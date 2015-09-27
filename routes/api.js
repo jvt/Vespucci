@@ -87,7 +87,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			var start = new Date();
 			start.setHours(start.getHours-4);
 			start = start / 1000;
-			var url = process.env.ig_fqdn+ '?distance=5000&MIN_TIMESTAMP='+start+'&access_token=' + process.env.ig_access_token + '&lat=' + latitude + '&lng=' + longitude;
+			var url = process.env.ig_fqdn+ '?distance=5000&MIN_TIMESTAMP=' + start + '&access_token=' + process.env.ig_access_token + '&lat=' + latitude + '&lng=' + longitude;
 			var rawUnsorted = [];
 			var iterations = 5;
 			function instagramify(MAX_TIMESTAMP, callback)
