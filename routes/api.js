@@ -110,10 +110,10 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	 * name: loadInstagramPhotos
 	 * parameters:
 	 * 		@obj: Object
-	 * return: @location Object
+	 * return: None
 	 * description: Organizes data to be used in the content-blurbs 
 	 */
-	function makeLocation(obj)
+	function makeLocation(obj, callback)
 	{
 		var instalinks = [];
 		var instagramScore = 0;
@@ -146,7 +146,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 			}
 		}
 		location.placename = obj.foursquare.name;
-		return location;
+		callback(location);
 	}
 
 	/**
@@ -459,7 +459,20 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 						});
 					}, function(notAborted, array)
 					{
-						res.json(masterObject);
+						var containmentObject = {
+							"masterData": masterObject,
+							"blurbData": []
+						}
+						forEach(masterObject, function(subArray, index)
+						{
+							makeLocation(subArray, function(locationData)
+							{
+								containmentObject.blurbData.push(locationData);
+							});
+						}, function(notAborted2, array2)
+						{
+							res.json(containmentObject);
+						});
 					});
 				});
 			});
