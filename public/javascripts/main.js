@@ -43,15 +43,6 @@ function makeLocation(json, obj){
 	return location;
 }
 
-function addMarker(currentLatLng, map, title) {
-	var marker = new google.maps.Marker({
-		position: currentLatLng,
-		map: map,
-		title: 'Hello World!'
-	});
-	return marker;
-}
-
 function initMap() {
 	var startPoint = {
 		lat: 33.783315,
@@ -278,16 +269,8 @@ function initAutocomplete() {
 		};
 
 		map.panTo(currentLatLng);
-		var marker = new google.maps.Marker({
-			position: currentLatLng,
-			map: map,
-			title: 'Hello World!'
-		});
-		var marker = addMarker(currentLatLng, map, 'Hello World!');
 
-		console.log("Success through autocomplete!")
-		console.log("latitude: " + lat);
-		console.log("longitude: " +  lng);
+		var marker = addMarker(currentLatLng, map, 'Your searched location');
 
 		sourceLat = lat;
 		sourceLng = lng;
@@ -308,12 +291,8 @@ function geolocate() {
 				lng: lng
 			};
 			map.panTo(currentLatLng);
-			var marker = new google.maps.Marker({
-				position: currentLatLng,
-				map: map,
-				title: 'Hello World!'
-			});
-			var marker = addMarker(currentLatLng, map, 'Hello World!');
+
+			var marker = addMarker(currentLatLng, map, 'Your current location');
 
 			console.log("Success through geolocation!");
 			console.log("latitude: " + lat);
@@ -412,7 +391,7 @@ function addMarker(currentLatLng, map, title) {
 	var marker = new google.maps.Marker({
 		position: currentLatLng,
 		map: map,
-		title: 'Hello World!'
+		title: title
 	});
 	return marker;
 }
