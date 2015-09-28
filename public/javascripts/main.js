@@ -171,7 +171,6 @@ function mycallback(data) {
 			if (infowindow) infowindow.close();
 			infowindow = this.info;
 			this.info.open(map, this);
-			infowindow.open(map, marker);
 		});
 
 		google.maps.Map.prototype.clearMarkers = function() {
