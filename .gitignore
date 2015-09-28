@@ -30,7 +30,6 @@ node_modules
 .DS_Store
 
 # Config files
-config.json
 .env
 
 # Elastic Beanstalk Files
