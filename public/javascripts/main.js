@@ -86,12 +86,10 @@ function mycallback(data) {
 		var latitude = json[locationIndex].lat;
 		var longitude = json[locationIndex].lng;
 		var eventName = json[locationIndex].eventname;
-		var instaLinks = [];
-		if(json[locationIndex].instagramCount > 0) {
-			instaLinks = json[locationIndex].instagram;
+		var instaLink = "";
+		if (json[locationIndex].instagram.length > 0) {
+			instaLink = json[locationIndex].instagram[Math.floor(Math.random() * json[locationIndex].instagram.length)];
 		}
-
-		var instaLink = instaLinks[0];
 
 		var address, phone, visitors;
 
