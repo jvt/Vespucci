@@ -165,7 +165,7 @@ function mycallback(data) {
 			position: {lat: latitude, lng:longitude}
 		});
 
-		google.maps.event.addListener(cityCircle, 'click', function() {
+		google.maps.event.addListener(cityCircle, 'mouseover', function() {
 			if (infowindow) infowindow.close();
 			infowindow = this.info;
 			this.info.open(map, this);
