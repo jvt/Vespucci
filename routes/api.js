@@ -107,7 +107,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 	}
 
 	/**
-	 * name: loadInstagramPhotos
+	 * name: makeLocation
 	 * parameters:
 	 * 		@obj: Object
 	 * return: None
@@ -121,7 +121,7 @@ router.get('/search/:LATITUDE/:LONGITUDE/', function(req, res, next) {
 
 		for (var insta in obj.instagram)
 		{
-			instalinks.push(obj.instagram[insta].link);
+			instalinks.push(obj.instagram[insta].fullResImageData.url);
 			instagramScore += 2;
 		}
 

@@ -68,8 +68,6 @@ function gettext (url, callback) {
 function mycallback(data) {
 	var json = $.parseJSON(data).blurbData;
 
-	console.log(json)
-
 	for (locationIndex in json) {
 		latitude = json[locationIndex].lat;
 		longitude = json[locationIndex].lng;
@@ -89,15 +87,11 @@ function mycallback(data) {
 		var longitude = json[locationIndex].lng;
 		var eventName = json[locationIndex].eventname;
 		var instaLinks = [];
-		if(json[locationIndex].instagramCount >= 1) {
+		if(json[locationIndex].instagramCount > 0) {
 			instaLinks = json[locationIndex].instagram;
 		}
-		var instaLink;
-		if (instaLinks.length >= 1) {
-			instaLink = instaLinks[0];
-		} else {
-			instaLink = "";
-		}
+
+		var instaLink = instaLinks[0];
 
 		var address, phone, visitors;
 
@@ -120,7 +114,6 @@ function mycallback(data) {
 		}
 
 		var link = encodeURI('https://maps.google.com?saddr=' + sourceLat + ',' + sourceLng + '&daddr=' + latitude + ',' + longitude);
-		console.log(link);
 		var contentString = 
 		'<div class="container blurbContent">' +
 		'<div id="siteNotice">' +
@@ -151,10 +144,10 @@ function mycallback(data) {
 
 							'<div class ="rightDiv">' +
 							'<p class="eventDesc">Snap from the event</p>' +
-							'<iframe id="instagram" width="150px" height="200px" src="' +
+							'<img id="instagram" width="150px" height="200px" src="' +
 							//Instagram URL goes here
 							instaLink+
-							'embed" frameborder="0"></iframe>' +
+							'"/>' +
 							'</div>' +
 							'</div>' +
 							'<hr>' +
@@ -182,7 +175,7 @@ function mycallback(data) {
 		});
 
 		google.maps.Map.prototype.clearMarkers = function() {
-			if(infowindow) {
+			if (infowindow) {
 				infowindow.close();
 			}
 
@@ -261,10 +254,6 @@ function geolocate() {
 			map.panTo(currentLatLng);
 
 			var marker = addMarker(currentLatLng, map, 'Your current location');
-
-			console.log("Success through geolocation!");
-			console.log("latitude: " + lat);
-			console.log("longitude: " +  lng);
 
 			sourceLat = lat;
 			sourceLng = lng;
