@@ -204,7 +204,7 @@ function loadJS(src, callback) {
     document.getElementsByTagName('head')[0].appendChild(s);
 }
 
-function init() {
+function masterInit() {
 	initMap();
 	initAutocomplete();
 }
