@@ -143,7 +143,7 @@ function mycallback(data) {
 							'</div>'+
 
 							'<div class ="rightDiv">' +
-							'<p class="eventDesc">Snap from the event</p>' +
+							'<p class="eventDesc">Instagram from the event</p>' +
 							'<img id="instagram" width="150px" height="200px" src="' +
 							//Instagram URL goes here
 							instaLink+
