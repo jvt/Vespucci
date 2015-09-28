@@ -11,38 +11,6 @@ function instantiateMap(alat, along) {
 	return map;
 }
 
-function makeLocation(json, obj){
-	var instalinks = [];
-	var contentCount = 0;
-	for(var insta in json[obj].instagram) {
-		instalinks.push(json[obj].instagram[insta].link);
-		contentCount += 2;
-	}
-	var location = {};
-	location.lat = json[obj].loc.latitude;
-	location.lng = json[obj].loc.longitude;
-	location.eventname = json[obj].loc.name;
-	location.instagram = instalinks;
-	location.count = contentCount;
-	if(json[obj].foursquare) {
-		if(json[obj].foursquare.location){
-			location.address = json[obj].foursquare.location.formattedAddress[0];
-		}
-	}
-	if (json[obj].foursquare) {
-		if(json[obj].foursquare.contact){
-			location.phone = json[obj].foursquare.contact.formattedPhone;
-		}
-	}
-	if(json[obj].foursquare){
-		if(json[obj].foursquare.stats){
-			location.visitors = json[obj].foursquare.stats.checkinsCount;
-		}
-	}
-	location.placename = json[obj].foursquare.name;
-	return location;
-}
-
 function initMap() {
 	var startPoint = {
 		lat: 33.783315,
