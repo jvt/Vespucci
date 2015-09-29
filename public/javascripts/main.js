@@ -182,6 +182,7 @@ function animateTransition() {
 				"float": "right",
 				"top": "-100px"
 			});
+			$("#searchBar").fadeIn('slow');
   		$("#headercontent").css({
   			"width": "90%"
   		});
