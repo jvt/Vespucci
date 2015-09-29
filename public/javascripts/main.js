@@ -1,7 +1,6 @@
 var globaljson, sourceLat, sourceLng, infowindow;
 var maxNumberLocations = 10;
 
-
 function instantiateMap(alat, along) {
 	var myLatLng = {lat: alat, lng: along};
 	var map = new google.maps.Map(document.getElementById('map'), {
@@ -24,8 +23,8 @@ function initMap() {
 
 	panningEffect();
 
-	function panningEffect() {
-		if (!eventListen) {
+	function panningEffect(){
+		if (!eventListen){
 			update += Math.random() * (0.02 - 0.050) + 0.050;
 			startPoint = {
 				lat: 33.783315 + (Math.random() * (0.02 - 0.050) + 0.050),
@@ -40,15 +39,15 @@ function initMap() {
 			});
 			$("#autocomplete").focus(function() {
 				eventListen = true;
-				$(window).keydown(function(event){
-					if(event.keyCode == 13) {
-						event.preventDefault();
-						return false;
-					}
-				});
+			  $(window).keydown(function(event){
+			    if(event.keyCode == 13) {
+			      event.preventDefault();
+			      return false;
+			    }
+			  });
 			});
 		}
-}			  
+	}			  
 }
 
 function gettext (url, callback) {
@@ -64,153 +63,7 @@ function gettext (url, callback) {
 	request.send();
 }
 
-//populate the map
-function mycallback(data) {
-	var json = $.parseJSON(data).blurbData;
-
-	for (locationIndex in json) {
-		latitude = json[locationIndex].lat;
-		longitude = json[locationIndex].lng;
-
-		cityCircle = new google.maps.Circle({
-			strokeColor: '#FF0000',
-			strokeOpacity: 0.8,
-			strokeWeight: 2,
-			fillColor: '#FF0000',
-			fillOpacity: 0.35,
-			map: map,			  		
-			center: {lat: json[locationIndex].lat, lng:json[locationIndex].lng},
-			radius: json[locationIndex].instagramScore * 20
-		});
-
-		var latitude = json[locationIndex].lat;
-		var longitude = json[locationIndex].lng;
-		var eventName = json[locationIndex].eventname;
-		var instaLink = "";
-		if (json[locationIndex].instagram.length > 0) {
-			instaLink = json[locationIndex].instagram[Math.floor(Math.random() * json[locationIndex].instagram.length)];
-		}
-
-		var address, phone, visitors;
-
-		if (typeof (json[locationIndex].address) !== 'undefined') {
-			address = json[locationIndex].address;
-		} else {
-			address = 'address: N/A';
-		}
-
-		if (typeof (json[locationIndex].phone) !== 'undefined') {
-			phone = json[locationIndex].phone;
-		} else {
-			phone = 'phone: N/A';
-		}
-
-		if (typeof (json[locationIndex].visitors) !== 'undefined') {
-			visitors = json[locationIndex].visitors;
-		} else {
-			visitors = 'N/A';
-		}
-
-		var link = encodeURI('https://maps.google.com?saddr=' + sourceLat + ',' + sourceLng + '&daddr=' + latitude + ',' + longitude);
-		var contentString = 
-		'<div class="container blurbContent">' +
-		'<div id="siteNotice">' +
-		'</div>' +
-		'<div id="bodyContent">' +
-		'<div class="top">' +
-		'<div class ="leftDiv">' +
-		'<h1 class="blurbHeader">' + 
-							//Event name
-							eventName +
-							'</h1>' +
-							'<p class="eventDesc">' +
-								// Phone number
-								phone + 
-								'<br>' + 
-								// Address
-								address + 
-								'</p>' +
-								'<hr>' +
-								'<p class="eventDesc">' + 
-								'No. of visitors' +
-								'</p>' +
-								'<p class="visitValue">' +
-							//No. of Visitors
-							visitors +
-							'</p>' +
-							'</div>'+
-
-							'<div class ="rightDiv">' +
-							'<p class="eventDesc">Instagram from the event</p>' +
-							'<img id="instagram" width="150px" height="200px" src="' +
-							//Instagram URL goes here
-							instaLink+
-							'"/>' +
-							'</div>' +
-							'</div>' +
-							'<hr>' +
-							'<div class="break"></div>' +
-							'<div class="footer">' +
-							'<a href="' +
-							link +
-							'" id="leggo"><button class="btn btn-success"> Let\'s Go!</button></a>' +
-							'</div>' +
-							'</div>'+
-							'</div>';
-
-							cityCircle.info = new google.maps.InfoWindow ({
-			// content: 'swerve ' + latitude,
-			content: contentString,
-			maxWidth: 450,
-			position: {lat: latitude, lng:longitude}
-		});
-
-		google.maps.event.addListener(cityCircle, 'mouseover', function() {
-			if (infowindow) infowindow.close();
-			infowindow = this.info;
-			this.info.open(map, this);
-		});
-
-		google.maps.Map.prototype.clearMarkers = function() {
-			if (infowindow) {
-				infowindow.close();
-			}
-
-			for(var i=0; i<this.markers.length; i++){
-				this.markers[i].set_map(null);
-			}
-		};
-	}
-}	
-
-
-function showArrays(event) {
-	infoWindow.setContent('swerve');
-	infoWindow.setPosition(event.latLng);
-	infoWindow.open(map);
-}
-
-function loadJS(src, callback) {
-    var s = document.createElement('script');
-    s.src = src;
-    s.async = true;
-    s.onreadystatechange = s.onload = function() {
-        var state = s.readyState;
-        if (!callback.done && (!state || /loaded|complete/.test(state))) {
-            callback.done = true;
-            callback();
-        }
-    };
-    document.getElementsByTagName('head')[0].appendChild(s);
-}
-
-function initializer() {
-	initMap();
-	initAutocomplete();
-}
-
 function initAutocomplete() {
-
 	autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
 		types: ['geocode']
 	});
@@ -260,37 +113,17 @@ function geolocate() {
 	}
 }
 
-// Transition from front to main
-function animateTransition() {
-	$("#options").fadeOut('slow', function() {
-		$("#mainlogo").fadeOut('slow', function() {
-			$("#searchBar").css({
-				"top": "-100px",
-				"left": "50px"
-			});
-			$("#searchBar").fadeIn('slow');
-			$("#headerbackground").css({
-				"backgroundColor": "#AA4652"
-			});
-			$("#headercontent").css({
-				"width": "90%"
-			});
-			$("#smalllogo").fadeIn('slow');
-
-			$("#blur").css({
-				"display": "none"
-			})
-
-			$("#back").css("display","none");
-		});
+/*
+ * latitude, longitude, sentiment, size. Creates a dot on the map
+ */
+function addMarker(currentLatLng, map, title) {
+	var marker = new google.maps.Marker({
+		position: currentLatLng,
+		map: map,
+		title: title
 	});
+	return marker;
 }
-
-$("#searchbutton").click(function() {
-	$("#options").fadeOut(function(){
-		$("#searchBar").fadeIn('slow');
-	});
-});
 
 /*
  * creates a map at a specified latitude and longitude
@@ -338,14 +171,223 @@ function instantiateMap(alat, along) {
 	return map;
 }
 
-/*
- * latitude, longitude, sentiment, size. Creates a dot on the map
- */
-function addMarker(currentLatLng, map, title) {
-	var marker = new google.maps.Marker({
-		position: currentLatLng,
-		map: map,
-		title: title
+// Transition from front to main
+function animateTransition() {
+	$("#options").fadeOut('slow', function() {
+		$("#mainlogo").fadeOut('slow', function() {
+  		$("#headerbackground").css({
+  			"backgroundColor": "#AA4652"
+  		});
+  		$("#searchBar").css({
+				"float": "right",
+				"top": "-100px"
+			});
+  		$("#headercontent").css({
+  			"width": "90%"
+  		});
+  		$("#smalllogo").fadeIn('slow');
+		
+  		$("#blur").css({
+  			"display": "none"
+  		});
+			$("#back").css({
+				"display": "none"
+			});
+		});
 	});
-	return marker;
 }
+
+$("#searchbutton").click(function() {
+	$("#options").fadeOut(function(){
+		$("#searchBar").fadeIn('slow');
+	});
+});
+
+
+function showArrays(event) {
+	infoWindow.setContent('swerve');
+	infoWindow.setPosition(event.latLng);
+	infoWindow.open(map);
+}
+
+
+function initializer() {
+	initMap();
+	initAutocomplete();
+}
+
+
+//populate the map
+function mycallback(data) {
+	var json = $.parseJSON(data).blurbData;
+
+	for (locationIndex in json) {
+		latitude = json[locationIndex].lat;
+		longitude = json[locationIndex].lng;
+
+  	cityCircle = new google.maps.Circle({
+  		strokeColor: '#FF0000',
+  		strokeOpacity: 0.8,
+  		strokeWeight: 2,
+  		fillColor: '#FF0000',
+  		fillOpacity: 0.35,
+  		map: map,			  		
+  		center: {lat: json[locationIndex].lat, lng:json[locationIndex].lng},
+  		radius: json[locationIndex].instagramScore * 20
+  	});
+
+    var latitude = json[locationIndex].lat;
+    var longitude = json[locationIndex].lng;
+    var eventName = json[locationIndex].eventname;
+    var instaLink = "";
+		if (json[locationIndex].instagram.length > 0) {
+			instaLink = json[locationIndex].instagram[Math.floor(Math.random() * json[locationIndex].instagram.length)];
+		}
+
+    var address, phone, visitors;
+
+    if (typeof (json[locationIndex].address) !== 'undefined') {
+    	address = json[locationIndex].address;
+    } else {
+    	address = 'address: N/A';
+    }
+
+    if (typeof (json[locationIndex].phone) !== 'undefined') {
+    	phone = json[locationIndex].phone;
+    } else {
+    	phone = 'phone: N/A';
+    }
+    
+    if (typeof (json[locationIndex].visitors) !== 'undefined') {
+    	visitors = json[locationIndex].visitors;
+    } else {
+    	visitors = 'N/A';
+    }
+
+    var link = encodeURI('https://maps.google.com?saddr=' + sourceLat + ',' + sourceLng + '&daddr=' + latitude + ',' + longitude);
+
+  	var contentString = 
+  	'<div class="container iw-container">' +
+      '<div class="iw-content">' +
+      	'<div class="topBlurb">' +
+	      	'<div class ="leftDiv">' +
+			      '<h1 class="blurbHeader">' + 
+			      	//Event name
+			      	eventName +
+			      '</h1>' +
+			      '<p class="eventDesc">' +
+			      		// Phone number
+			      		phone + 
+			      	'<br>' + 
+			      		// Address
+			      		address + 
+			      '</p>' +
+			      '<hr>' +
+			      '<p class="eventDesc">' + 
+			      	'No. of visitors' +
+			      '</p>' +
+			      '<p class="visitValue">' +
+			      	//No. of Visitors
+			      	visitors +
+			      '</p>' +
+			    '</div>'+
+
+		      '<div class ="rightDiv">' +
+			      '<p class="eventDesc">Instagram from the event</p>' +
+							'<img id="instagram" width="150px" height="200px" src="' +
+							//Instagram URL goes here
+							instaLink+
+							'"/>' +
+	      	'</div>' +
+	      '</div>' +
+	      '<div class="break"></div>' +
+	      '<hr>' +
+	      '<div class="footer">' +
+	      	'<a href="' +
+	      		link +
+	      	'" id="leggo"><button class="btn btn-success"> Let\'s Go!</button></a>' +
+	      '</div>' +
+      '</div>'+
+    '</div>';
+
+  	cityCircle.info = new google.maps.InfoWindow ({
+  		// content: 'swerve ' + latitude,
+  		content: contentString,
+  		maxWidth: 450,
+  		position: {lat: latitude, lng:longitude}
+  	});
+
+  	google.maps.event.addListener(cityCircle, 'mouseover', function() {
+			if (infowindow) infowindow.close();
+			infowindow = this.info;
+			this.info.open(map, this);
+		});
+
+		google.maps.Map.prototype.clearMarkers = function() {
+	    if(infowindow) {
+	      infowindow.close();
+	    }
+	    
+	    for(var i=0; i<this.markers.length; i++){
+	      this.markers[i].set_map(null);
+	    }
+	  };
+	}
+}	
+
+
+function loadJS(src, callback) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onreadystatechange = s.onload = function() {
+        var state = s.readyState;
+        if (!callback.done && (!state || /loaded|complete/.test(state))) {
+            callback.done = true;
+            callback();
+        }
+    };
+    document.getElementsByTagName('head')[0].appendChild(s);
+}
+
+
+function makeLocation(json, obj){
+	var instalinks = [];
+	var contentCount = 0;
+	for(var insta in json[obj].instagram) {
+		instalinks.push(json[obj].instagram[insta].link);
+		contentCount += 2;
+	}
+	var location = {};
+	location.lat = json[obj].loc.latitude;
+	location.lng = json[obj].loc.longitude;
+	location.eventname = json[obj].loc.name;
+	location.instagram = instalinks;
+	location.count = contentCount;
+	if(json[obj].foursquare) {
+		if(json[obj].foursquare.location){
+			location.address = json[obj].foursquare.location.formattedAddress[0];
+		}
+	}
+	if (json[obj].foursquare) {
+		if(json[obj].foursquare.contact){
+			location.phone = json[obj].foursquare.contact.formattedPhone;
+		}
+	}
+	if(json[obj].foursquare){
+		if(json[obj].foursquare.stats){
+			location.visitors = json[obj].foursquare.stats.checkinsCount;
+		}
+	}
+	location.placename = json[obj].foursquare.name;
+	return location;
+}
+
+
+
+
+
+
+
+
+

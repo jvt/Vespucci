@@ -1,11 +1,17 @@
+html, body { 
+	height: 100%; 
+	margin: 0; 
+	padding: 0; 
+}
 body {
-  padding: 0;
-  margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   height:auto !important;
 }
 a {
   color: #00B7FF;
+}
+button, button:hover, button:active, button:focus {
+  outline: none !important;
 }
 a:hover {
 	text-decoration: none;
@@ -13,7 +19,7 @@ a:hover {
 @font-face {
 	font-family: Gidole-Regular;
 	src: url(/fonts/Gidole-Regular.ttf);
-}
+} 
 h1 {
 	font-family: Gidole-Regular;
 	font-size: 90px;
@@ -79,11 +85,6 @@ pre {
   z-index: 0;
   opacity: 0.5;
 }
-@media (max-width: 500px) {
-	#mainlogo {
-		font-size: 3em;
-	}
-}
 #headercontent {
   width: 80%;
   position: relative;
@@ -93,12 +94,11 @@ pre {
 #searchBar {
 	position: relative;
 	top: 60px;
-	width: 800px;
+	width: 80%;
 	padding: 0;
-	margin: 0; 
+	margin: 0 auto; 
 	z-index: 1;
 	display: none;
-	float: right;
 }
 a:hover {
 	color: white;
@@ -144,35 +144,22 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 	width: 300px;
 	font-size: 2em;
 }
-#optionSearch {
-	float: left;
-	margin-left: 70px;
-}
-#optionLocate {
-	float: right;
-	margin-right: 70px;
-}
 #back {
 	font-weight: bold;
 	color: white;
 	font-size: 1.3em;
 	text-shadow: 1px 1px grey;
 }
-.blurbContent {
-}
-.blurbHeader {
+.blurbHeader, .visitValue {
 	color: black;
-	font-size: 2.5em;
+	font-size: 1.5em;
 }
 #leggo {
 	position: relative;
-	left: 180px;
+	left: 175px;
 }
 .eventDesc {
 	font-size: 0.75em;
-}
-.visitValue {
-	font-size: 2.5em;
 }
 .instagram {
 	position: relative;
@@ -181,10 +168,55 @@ a[href^="https://maps.google.com/maps"]{display:none !important}
 .leftDiv {
 	float: left;
 	padding: 0 20px;
-	max-width: 250px;
+	width: 200px;
+	word-wrap: break-word;
 }
 .rightDiv {
 	float: left;
 	padding: 0 20px;
 	border-left: 1px solid #D1D1D1;
+}
+@media (max-width: 500px) {
+	#mainlogo {
+		font-size: 4em;
+	}
+	.toggleOptions {
+		height: 70px;
+		width: 190px;
+		font-size: 2em; 
+	}
+	#optionSearch {
+		margin-bottom: 30px;
+	}
+	#searchBar {
+		width: 60%;
+	}
+}
+@media (min-width: 500px) and (max-width: 1000px) {
+	#optionSearch {
+		margin-bottom: 30px;
+	}
+	#searchBar {
+		width: 60%;
+	}
+}
+.iw-container {
+	margin: 0 !important;
+	padding: 0 !important;
+	width: 400px !important;
+}
+.iw-content {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.gm-style-iw {
+	margin: 0 !important;
+	padding: 0 !important;
+  width: 400px !important;
+}
+
+.iw-container, .iw-content {
+	height: 315px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
