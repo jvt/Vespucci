@@ -156,20 +156,25 @@ function geolocate() {
 	 		]
 	 	},
 	 	{
-	 		featureType: "poi.business",
-	 		elementType: "labels",
-	 		stylers: [
-	 		{ visibility: "off" }
-	 		]
-	 	}
+	    featureType: "poi",
+	    elementType: "labels",
+	    stylers: [
+	      { visibility: "off" }
+	    ]
+	  },
+	  {
+		  featureType: 'transit.station',
+		  elementType: 'all',
+		  stylers: [
+		  	{ visibility: 'off' }
+		  ]
+		}
  	];
  	var mapOptions = {
- 		disableDefaultUI: true,
+ 		scrollwheel: true,
  		disableDoubleClickZoom: true,
- 		scrollwheel: false,
- 		navigationControl: false,
+ 		disableDefaultUI: true,
  		mapTypeControl: false,
- 		scaleControl: false,
  		draggable: true,
  		mapTypeId: google.maps.MapTypeId.ROADMAP,
  		center: myLatLng,
