@@ -1,5 +1,6 @@
 var globaljson, sourceLat, sourceLng, infowindow;
 var maxNumberLocations = 10;
+var eventListen = false;
 
 function instantiateMap(alat, along) {
 	var myLatLng = {lat: alat, lng: along};
@@ -22,7 +23,6 @@ function initMap() {
 
 	var update = startPoint.lng;
 	var timerDelay = 800;
-	var eventListen = false;
 
 	/**
 	 * Create animation on the background map on the homepage
@@ -37,37 +37,24 @@ function initMap() {
 			map.panTo(startPoint);
 			setTimeout(panningEffect, timerDelay);
 			timerDelay += 800;
-
-			$("#locationbutton").click(function(e) {
-				e.preventDefault();
-		  	Pace.restart();
-				eventListen = true;
-			});
-			$("#autocomplete").focus(function() {
-				eventListen = true;
-				$(window).keydown(function(event){
-					if(event.keyCode == 13) {
-						event.preventDefault();
-						return false;
-					}
-				});
-			});
 		}
 	}
 	panningEffect();  
 }
 
 function gettext (url, callback) {
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function()
-	{
-		if (request.readyState == 4 && request.status == 200)
+	$.ajax({
+		'url': '/api/search/' + sourceLat + "/" + sourceLng,
+		success: function(responseData, textStatus)
 		{
-			populateMapWithDataPoints(request.responseText);
+			window.NProgress.done();
+			populateMapWithDataPoints(responseData);
+		},
+		error: function(jqXHR, textStatus, error)
+		{
+			alert("There was an error in making that network request. Please try again.");
 		}
-	}; 
-	request.open('GET', '/api/search/' + sourceLat + "/" + sourceLng);
-	request.send();
+	});
 }
 
 function initAutocomplete() {
@@ -111,6 +98,7 @@ function geolocate() {
 				lng: lng
 			};
 			map.panTo(currentLatLng);
+			window.NProgress.done();
 
 			var marker = addMarker(currentLatLng, map, 'Your current location');
 
@@ -225,7 +213,7 @@ $("#searchbutton").click(function() {
  * Given a set of data points, add them to the map with the corresponding circle data
  */
 function populateMapWithDataPoints(data) {
-	var json = $.parseJSON(data).blurbData;
+	var json = data.blurbData;
 
 	for (locationIndex in json) {
 		latitude = json[locationIndex].lat;
@@ -344,3 +332,22 @@ function initializer() {
 	initMap();
 	initAutocomplete();
 }
+
+$(document).ready(function()
+{
+	$("#locationbutton").click(function(e) {
+		e.preventDefault();
+		window.NProgress.start();
+		geolocate();
+		eventListen = true;
+	});
+	$("#autocomplete").focus(function() {
+		eventListen = true;
+		$(window).keydown(function(event){
+			if(event.keyCode == 13) {
+				event.preventDefault();
+				return false;
+			}
+		});
+	});
+});
