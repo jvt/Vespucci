@@ -12,7 +12,7 @@ function instantiateMap(alat, along) {
 
 /**
  * Initialize the map
- */
+ */ 
 function initMap() {
 	var startPoint = {
 		lat: 33.783315,
@@ -38,7 +38,9 @@ function initMap() {
 			setTimeout(panningEffect, timerDelay);
 			timerDelay += 800;
 
-			$("#locationbutton").click(function() {
+			$("#locationbutton").click(function(e) {
+				e.preventDefault();
+		  	Pace.restart();
 				eventListen = true;
 			});
 			$("#autocomplete").focus(function() {
