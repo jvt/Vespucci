@@ -41,7 +41,7 @@ app.use(function (req, res, next) {
 });
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', './views');
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
@@ -49,12 +49,12 @@ app.set('view engine', 'handlebars');
  app.enable('view cache');
 
 // uncomment after placing your favicon in /public
-app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon('./public/favicon.ico'));
 // app.use(logger(process.env.NODE_ENV));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('./public/'));
 
 app.use('/', index);
 app.use('/api', api);
